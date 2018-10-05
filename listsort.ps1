@@ -32,7 +32,6 @@ $beginningbutton = new-object system.windows.forms.button
 $endingbutton = new-object system.windows.forms.button
 $uniquecheckbox = new-object system.windows.forms.checkbox
 $lowercasecheckbox = new-object system.windows.forms.checkbox
-$quitbutton = new-object system.windows.forms.button
 
 $global:trimstart = $null
 $global:trimend = $null
@@ -43,25 +42,24 @@ function form {
     $form.text = "Pedant v3.1.2" 
     $form.startposition = [system.windows.forms.formstartposition]::centerscreen
     $form.autosize = $true
-    $form.height = 570
+    $form.height = 520
     $form.width = 250
     $form.autoscale = $true
     $form.autosize = $true
     $form.formborderstyle = "fixeddialog"
     $form.maximizebox = $false
-    $form.controlbox = $false 
 
-    $textstr1.top = 30
+    $textstr1.top = 35
     $textstr1.left = 59
     $textstr1.width = 200
     $textstr1.text = "Välj lista att behandla (.txt, .dat):" 
 
     $fileselect.text = "Bläddra"
-    $fileselect.top = 60
+    $fileselect.top = 65
     $fileselect.left = 40
     $fileselect.width = 200
 
-    $selectedfilebox.top = 90
+    $selectedfilebox.top = 95
     $selectedfilebox.left = 40
     $selectedfilebox.width = 200
     $selectedfilebox.text = "               Du har inte valt något"
@@ -94,58 +92,53 @@ function form {
     $endingbutton.width = 98
     $endingbutton.enabled = $false
 
-    $textbox.top = 222
+    $textbox.top = 220
     $textbox.left = 40
     $textbox.width = 200
     $textbox.readonly = $true
-    $textbox.text = "                 Standard: Läge 1"
+    $textbox.text = "                 Utgångsläge: Läge 1"
 
-    $textstr3.top = 268
+    $textstr3.top = 248
     $textstr3.left = 80
     $textstr3.width = 150
     $textstr3.text = "Välj destinationsmapp:"
 
-    $destfilebutton.top = 288
+    $destfilebutton.top = 268
     $destfilebutton.left = 40
     $destfilebutton.width = 200
     $destfilebutton.text = "Bläddra"
 
-    $selectedoutputfile.top = 318
+    $selectedoutputfile.top = 298
     $selectedoutputfile.left = 40
     $selectedoutputfile.width = 200
     $selectedoutputfile.text = "               Du har inte valt något"
     $selectedoutputfile.readonly = $true
 
-    $gobutton.top = 358
+    $gobutton.top = 338
     $gobutton.left = 40
     $gobutton.width = 200
     $gobutton.text = "Kör"
     $gobutton.enabled = $false
 
-    $flushbutton.top = 388
+    $flushbutton.top = 368
     $flushbutton.left = 40
     $flushbutton.width = 200
     $flushbutton.text = "Nollställ"
 
-    $aboutbutton.top = 418
+    $aboutbutton.top = 398
     $aboutbutton.left = 40
     $aboutbutton.width = 200
     $aboutbutton.text = "Hjälp"
 
-    $quitbutton.top = 448
-    $quitbutton.left = 40
-    $quitbutton.width = 200
-    $quitbutton.text = "Avsluta"
 
-    $uniquecheckbox.top = 480
+    $uniquecheckbox.top = 430
     $uniquecheckbox.left = 40
     $uniquecheckbox.text = "Unika värden"
     $uniquecheckbox.height = 30
 
-    $lowercasecheckbox.top = 482
+    $lowercasecheckbox.top = 432
     $lowercasecheckbox.left = 175
     $lowercasecheckbox.text = "Gemener"
-
 
 #draw objects on form
 
@@ -166,7 +159,6 @@ function form {
     $form.controls.add($selectedfilebox)
     $form.controls.add($removemailbutton)
     $form.controls.add($aboutbutton)
-    $form.controls.add($quitbutton)
 
 }
 
@@ -229,7 +221,11 @@ $removemailbutton_click = {
         $global:removesomething = $true
         $beginningbutton.enabled = $true
         $endingbutton.enabled = $true
-        $textbox.text = "Läge 3: Alla ''$global:removetext'' raderas"
+        
+            if (-not $global.gobutton.text -eq "Utför Nollställning") {
+                $global:gobutton.enabled = $true
+            }
+            $textbox.text = "Läge 3: Alla ''$global:removetext'' raderas"
     }
     
     if ($global:removetext -eq ".") {
@@ -402,7 +398,6 @@ $gobutton_click = {
             $data = $data -replace "á","a"
             $data = $data -replace "ó","o"
             $data = $data -replace " ","."
-            $data = $data -replace "-","."  
 
             $parsed = $parsed + $data + $global:domain
             $parsed += "`r`n"
@@ -442,7 +437,7 @@ $flushbutton_click = {
     $selectedfilebox.text = "               Du har inte valt något"
     $data = $null
     $global:enteredtext = $null
-    $textbox.text = "                 Standard: Läge 1"
+    $textbox.text = "                 Utgångsläge: Läge 1"
     $gobutton.text = "Kör"
 }
 
@@ -452,12 +447,6 @@ $aboutbutton_click = {
     $wshell.popup("Pedant är en app för listsortering.`nPedant har 4 lägen. Det huvudsakliga syftet är att hantera långa listor`nmed antingen namn eller e-post adresser för att sedan formatera dem till önskat läge. Filen sparas i vald mapp vid namn ''pedant.txt'' och skrivs över om Pedant körs igen.`n`n ## Läge 1 ##`nLäge 1 är utgångsläget i pedant.`nPedant kommer återgå till läge 1 efter nollställning.`nExempelvis har man en lista som innehåller namn med formatet [förnamn efternamn].`nOm man sedan kör pedant sparas den nya filen med: `n`n- Icke ascii tecken (som å, ä, ö, ü, ¨y,) ersätts med (a, a, o, u,) osv. `n`n- Tecken med apostrof raderas och byts ut mot neutrala tecken`n- [mellanslag] ersätts med [punkt]`n- Listan byggs upp alfabetiskt i sorteringen. `n`** Exempel:`n Göran Åberg blir goran.aberg `n`n ## Läge 2 ##`nTryck på knappen ''lägg till något''. Pedant lägger till detta värdet på varje rad i hela listan. Listan kommer sorteras med samma regler som läge 1. `n`** exempel:`nVälj att lägga till @domain.com i pedant. Ürban Pålsson blir urban.palsson@domain.com`n`n## Läge 3 ##`nTryck på knappen ''ta bort något''.`nObs! Pedant kommer endast att byta ut [punkt] till [mellanslag] och radera det önskade värdet för varje rad.`nDetta läge är lämpligt om man vill skapa en ren namnlista av en lista med e-post adresser. `n`** Exempel:`n Välj att radera @test.se i pedant. namn.efternamn@test.se blir`nnamn efternamn`n`n## Läge 4 ##`nI läge 4 har du endast valt att radera, eller lägga till något i antingen början av varje rad, eller i slutet av varje rad. Inga andra förändringar sker med listan.`nOBS! 'Ta bort något' är skiftlägeskänsligt. Ange en stor eller liten bokstav beroende på vad du vill ta bort.`n`nOm Pedant:`n`nPedant är utvecklat i PowerShell 5.1 av Simon Olofsson för Advania Sverige. Mjukvaran omfattas inte av några garantier av vare sig behandlad data eller ursprunglig data. Buggar eller andra önskemål rapporteras till dotchetter@protonmail.ch`n`n2018-08 build 3.1.2",0,"Pedant - Hjälp",0x1)
 }
 $aboutbutton.add_click($aboutbutton_click)
-
-$quitbutton_click = {
-    $form.close()
-}
-$quitbutton.add_click($quitbutton_click)
-
 
 form
 $form.showdialog()
