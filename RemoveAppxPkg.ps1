@@ -1,20 +1,27 @@
-# 2018 Simon Olofsson
-# Uninstalls Apps in array 
 
-[array]$app_arr = @(
-    "*Wallet*","*zunemusic*","*zunevideo*",
-    "*onenote*","*bingsports*","*microsoftofficehub*",
+# 2018 Simon Olofsson
+# Uninstalls Apps in array and removes provisioned packages to prevent automatic re-install 
+
+[array]$all_apps = Get-AppxPackage | Select Name
+[array]$rem_arr = @(
+
+    "*wallet*","*zunemusic*","*zunevideo*",
+    "*onenote*","*bingsports*","*officehub*",
     "*bingfinance*","*bingnews*","*bingweather*",
-    "*gethelp*","*microsoftsolitairecollection*",
-    "*storepurchasedapp*","*microsoft3dviewer*",
+    "*gethelp*","*solitairecollection*",
+    "*storepurchaseapp*","*microsoft3dviewer*",
     "*xboxspeechtotextoverlay*","*xbox.tcui*",
-    "*skypeapp*","*print3d*","*getstarted*",
+    "*skype*","*print3d*","*getstarted*",
     "*windowsmaps*","*xboxidentityprovider*",
-    "*stickynotes*","*messaging*","*windowsfeedbackhub*"
+    "*stickynotes*","*messaging*","*windowsfeedback*"
 );
 
-foreach ($i in $app_arr) {
-    Get-AppxPackage -allusers -name $i | Remove-AppxPackage
-    Get-AppxProvisionedPackage -Online | where {$_.packagename -like $i} | 
+function rmvapp {param($arg)
+    
+    Get-AppxPackage -allusers -name $arg | Remove-AppxPackage
+    Get-AppxProvisionedPackage -Online | where {$_.packagename -like '$arg'} | 
     Remove-AppxProvisionedPackage -Online
 }
+
+foreach ($i in $all_apps) {
+    foreach ($j in $rem_arr) {if ($i -like $j) {rmvapp($j)}}}
