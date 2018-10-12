@@ -16,10 +16,10 @@
     "*stickynotes*","*messaging*","*windowsfeedback*"
 );
 
-function rmvapp {param($arg)
+function rmvapp {param($app)
     
-    Get-AppxPackage -allusers -name $arg | Remove-AppxPackage
-    Get-AppxProvisionedPackage -Online | where {$_.packagename -like '$arg'} | 
+    Get-AppxPackage -allusers -name $app | Remove-AppxPackage
+    Get-AppxProvisionedPackage -Online | where {$_.packagename -like '$app'} | 
     Remove-AppxProvisionedPackage -Online
 }
 
