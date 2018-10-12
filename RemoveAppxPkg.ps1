@@ -1,5 +1,4 @@
 
-# 2018 Simon Olofsson
 # Uninstalls Apps in array and removes provisioned packages to prevent automatic re-install 
 
 [array]$all_apps = Get-AppxPackage | Select Name
