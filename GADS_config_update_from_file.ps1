@@ -21,7 +21,7 @@ function builder {param($arg)
              <suspended>false</suspended>
              <scope>SUBTREE</scope>
              <orgName>/ADM/$data</orgName>
-             <filter>(&amp;(objectCategory=person)(objectClass=user)(mail=*katrineholm.se*)(physicalDeliveryOfficeName=$data))</filter>
+             <filter>(&amp;(objectCategory=person)(objectClass=user)(mail=*DOMAIN.COM*)(physicalDeliveryOfficeName=$data))</filter>
             </search>
 "@}
     return $datblk   
