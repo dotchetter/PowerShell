@@ -4,15 +4,22 @@
 [array]$all_apps = Get-AppxPackage | Select Name
 [array]$rem_arr = @(
 
-    "*wallet*","*zunemusic*","*zunevideo*",
-    "*onenote*","*bingsports*","*officehub*",
-    "*bingfinance*","*bingnews*","*bingweather*",
-    "*gethelp*","*solitairecollection*",
+    "*skype*","*print3d*",
+    "*getstarted*","*onedrive*",
+    "*mspaint*","*xboxapp*",
+    "*bingfinance*","*bingnews*",
+    "*bingweather*","*gethelp*",
+    "*messaging*","*windowsfeedback*",
+    "*photos*","*oneconnect*",
+    "*people*","*communicationsapps*",
+    "*holographicfirstrun*",
+    "*wallet*","*zunemusic*",
+    "*onenote*","*bingsports*",
+    "*officehub*","*zunevideo*",
+    "*solitairecollection*","*stickynotes*",
     "*storepurchaseapp*","*microsoft3dviewer*",
-    "*xboxspeechtotextoverlay*","*xbox.tcui*",
-    "*skype*","*print3d*","*getstarted*",
     "*windowsmaps*","*xboxidentityprovider*",
-    "*stickynotes*","*messaging*","*windowsfeedback*"
+    "*xboxspeechtotextoverlay*","*xbox.tcui*"
 );
 
 function rmvapp {param($app)
