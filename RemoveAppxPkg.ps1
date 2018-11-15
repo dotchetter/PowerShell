@@ -1,5 +1,4 @@
 
-
 [int]$counter = 0
 [array]$ALL_APPS = Get-AppxPackage | Select Name
 [array]$REGVALUES = @(
@@ -77,10 +76,10 @@ function main {
         }
     }
     else {
-        $counter += 1
-        start-sleep(60)
-        if ($counter -lt 20) {main}
-        else {exit}
+        $item = "hklm:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+        $value = "C:\temp\awscript\removeappxpkg.ps1"
+        new-item -path $item -value $value -force
+        exit
     }
 }
 
