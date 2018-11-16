@@ -69,6 +69,7 @@ function main {
         if ($is_alive -eq $true) {
             get-process | where {$_.name -like 'onedrive'} | stop-process
         }
+        start-process 'c:\windows\syswow64\onedrivesetup.exe' /uninstall
         regmod($REGVALUES)
         foreach ($i in $ALL_APPS) {
             foreach ($j in $REM_ARR) {if ($i -like $j) {remove_app($j)}
@@ -77,7 +78,7 @@ function main {
     }
     else {
         $item = "hklm:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-        $value = "C:\temp\awscript\removeappxpkg.ps1"
+        $value = "powershell.exe -command set-executionpolicy bypass -force; start-process powershell.exe -windowstyle hidden {C:\temp\awscript\removeappxpkg.ps1}"
         new-item -path $item -value $value -force
         exit
     }
