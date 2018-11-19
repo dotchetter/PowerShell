@@ -1,11 +1,5 @@
 
-[int]$counter = 0
-[array]$ALL_APPS = Get-AppxPackage | Select Name
-[array]$REGVALUES = @(
-
-    'HKEY_CLASSES_ROOT\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}',
-    'HKEY_CLASSES_ROOT\WOW6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}'
-);
+[array]$ALL_APPS = get-appxpackage | select name
 [array]$REM_ARR = @(
 
     '*communicationsapps*',
@@ -26,63 +20,53 @@
 );
 
 
-# find out if process process is running, return boolean
-function alive {param($process)
+# find out if process process is running and end it
+function stop($process){
 
-    $status = get-process | where {$_.name -like '$process'}
+    $status = get-process | where {$_.name -like $process}
     if ($status) {
-        $its_alive = $true
+        get-process | where {$_.name -like $process} | stop-process
     }
-    else {
-        $its_alive = $false
-    }
-    return $its_alive
 }
 
 
 # uninstalls Apps in array and removes provisioned packages to prevent automatic re-install 
-function remove_app {param($app)
+function remove_app($app){
     
-    get-appxpackage -allusers -name $app | Remove-AppxPackage
-    get-appxprovisionedpackage -Online | where {$_.packagename -like '$app'} | 
+    get-appxpackage -allusers -name $app | remove-appxpackage
+    get-appxprovisionedpackage -Online | where {$_.packagename -like $app} | 
     remove-appxprovisionedpackage -Online
 }
 
 
-# modify registry
-function regmod {param($values)
+# execute app removal, registry modification and sets reg-value
+# -to disable onedrive if the file is run after oobe.
+function main(){
 
-    foreach ($value in $values) {
-        reg delete $value /v System.IsPinnedToNameSpaceTree /f
-        gpupdate /force
-        start-sleep(3)
-        reg add $value /v System.IsPinnedToNameSpaceTree /t REG_DWORD /d 0 /f
-    }
-}
+    $reg_path_setup = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\oobe\Stats'
+    $reg_path_onedrive = 'HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive'
 
-
-# main
-function main {
-
-    if ($env:username -ne 'defaultuser0') {
-        $is_alive = alive('onedrive')
-        if ($is_alive -eq $true) {
-            get-process | where {$_.name -like 'onedrive'} | stop-process
-        }
-        start-process 'c:\windows\syswow64\onedrivesetup.exe' /uninstall
-        regmod($REGVALUES)
+    $setup_finished = get-itemproperty -Path $reg_path_setup -name 'oobeusersignedin'
+    if ($setup_finished){
+        stop('onedrive*')
+        start-sleep(10)
+        reg add $reg_path_onedrive /v DisableFileSyncNGSC /t REG_DWORD /d 1 /f
+        gpupdate /wait:30
         foreach ($i in $ALL_APPS) {
             foreach ($j in $REM_ARR) {if ($i -like $j) {remove_app($j)}
             }
         }
     }
     else {
-        $item = "hklm:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-        $value = "powershell.exe -command set-executionpolicy bypass -force; start-process powershell.exe -windowstyle hidden {C:\temp\awscript\removeappxpkg.ps1}"
+        $item = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce'
+        $command_one = 'powershell.exe -command set-executionpolicy bypass -force'
+        $command_two = 'start-process powershell.exe -windowstyle hidden {C:\temp\awscript\removeappxpkg.ps1}'
+        $value = ($command_one + '; ' + $command_two)
         new-item -path $item -value $value -force
-        exit
+        if ($Error) {
+            $Error | out-file $env:systemdrive\temp\awscript\ConfigScript_error.log
+        }
     }
 }
 
 main
-if ($Error) {$Error | out-file $env:systemdrive\temp\awscript\error.log}
