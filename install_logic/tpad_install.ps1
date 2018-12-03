@@ -10,14 +10,13 @@
 function main {
 
     $download_complete = $false
+    while ($download_complete -eq $false) {
+        $download_complete = get_payload
+    }
+
     $install_path = get_install_path
     $atk_install_success = install_atk
     $smartgesture_success = install_smartgesture($install_path)
-    while ($download_complete -eq $false) {
-        $download_complete = get_payload
-        start-sleep(10)
-    }
-
     if ($atk_install_success -or $smartgesture_success -eq 'error') {
         $err_count = $error.count
         $err_string = "$err_count errors occured. See verbose log below:"
@@ -27,11 +26,10 @@ function main {
 
 function get_payload {
 <# checks to see if all dependency files are fnished downloading 
-    from MDM in current directory
-#>
-
+    from MDM in current directory #>
+    start-sleep(10)
     $evaluate = test-path ".\SETUP.CAB", ".\setup.exe", 
-    ".\SetupTPDriver.msi", ".\D3F.exe"
+    ".\SetupTPDriver.msi", ".\D3F.exe",".\409.msi",".\update"
     if ($false -in $evaluate) {
         return $false
     } else {
