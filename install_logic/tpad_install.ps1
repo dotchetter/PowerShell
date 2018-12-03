@@ -1,16 +1,23 @@
+<#
+* Description:
+  Installs ATK and SmartGesture on desktop client. 
 
-# ## Description:
-#   Installs ATK and SmartGesture on desktop client. 
-# 
-# ## abbreviations:
-#   ATK = dependency
-#   Smartgesture = Trackpad Driver
+* abbreviations:
+  ATK = dependency
+  Smartgesture = Trackpad Driver
+#>
 
 function main {
-  
+
+    $download_complete = $false
     $install_path = get_install_path
     $atk_install_success = install_atk
     $smartgesture_success = install_smartgesture($install_path)
+    while ($download_complete -eq $false) {
+        $download_complete = get_payload
+        start-sleep(10)
+    }
+
     if ($atk_install_success -or $smartgesture_success -eq 'error') {
         $err_count = $error.count
         $err_string = "$err_count errors occured. See verbose log below:"
@@ -18,8 +25,22 @@ function main {
     }
 }
 
+function get_payload {
+<# checks to see if all dependency files are fnished downloading 
+    from MDM in current directory
+#>
+
+    $evaluate = test-path ".\SETUP.CAB", ".\setup.exe", 
+    ".\SetupTPDriver.msi", ".\D3F.exe"
+    if ($false -in $evaluate) {
+        return $false
+    } else {
+        return $true
+    }
+}
 
 function get_install_path {
+# fetch OS bitness and return correct installation path
 
    $move_files_path_64 = "${env:programfiles(x86)}\ASUS\Asus Smart Gesture\AsTPCenter"
    $move_files_path_32 = "${env:programfiles}\ASUS\Asus Smart Gesture\AsTPCenter"
@@ -44,7 +65,7 @@ function install_atk {
 
 
 function install_smartgesture($install_path) {
-  
+
     start-process "msiexec.exe" -argumentlist "/x {938CFBD4-0652-49E5-BB8B-153948865941} /qn /norestart"
     start-process "msiexec.exe" -argumentlist "/i SetupTPDriver.msi /qn /norestart"
     start-process "D3F.exe"
