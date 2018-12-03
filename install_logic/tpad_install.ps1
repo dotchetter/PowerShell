@@ -27,7 +27,7 @@ function main {
 function get_payload {
 <# checks to see if all dependency files are fnished downloading 
     from MDM in current directory #>
-    start-sleep(10)
+    start-sleep(5)
     $evaluate = test-path ".\SETUP.CAB", ".\setup.exe", 
     ".\SetupTPDriver.msi", ".\D3F.exe",".\409.msi",".\update"
     if ($false -in $evaluate) {
@@ -52,7 +52,6 @@ function get_install_path {
     return $path
 }
 
-
 function install_atk {
     
     start-process "msiexec.exe" -argumentlist "/i 409.msi /qn /norestart" -Wait
@@ -60,7 +59,6 @@ function install_atk {
         return 'error'
     }
 }
-
 
 function install_smartgesture($install_path) {
 
