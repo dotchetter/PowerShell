@@ -2,7 +2,7 @@
 ## Purpose
 
 This project installs prerequisite software and Trackpad driver. 
-Initially performed by a .bat file in the driver pack, this includes more verbose logic and error handling.
+Initially performed by a .bat file in the driver pack, this provides more detailed logic and error handling.
 
 ## Use case
 
