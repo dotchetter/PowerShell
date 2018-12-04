@@ -76,7 +76,7 @@ function install_smartgesture($install_path) {
     start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\sg\SetupTPDriver.msi /qn /norestart"
     start-process "C:\temp\awscript\sg\D3F.exe"
     md $install_path -Force
-    copy-item '.\update' -Force -destination "$install_path"
+    copy-item 'C:\temp\awscript\sg\update' -Force -destination "$install_path"
     if ($error) {
         return 'error'
     }
@@ -85,7 +85,7 @@ function install_smartgesture($install_path) {
 function error_handler($error) {
 
     $err_count = $error.count
-    $err_string = "$err_count errors occured. See verbose log below:"
+    $err_string = "$err_count error(s) occured. See verbose log below:"
     $err_string,"`n",$error | out-file -filepath 'C:\temp\awscript\sg\TpadDriver_install_error.log'
 }
 main
