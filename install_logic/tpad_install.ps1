@@ -20,7 +20,7 @@ function main {
     if ($atk_install_success -or $smartgesture_success -eq 'error') {
         $err_count = $error.count
         $err_string = "$err_count errors occured. See verbose log below:"
-        $err_string,"`n",$error | out-file -filepath '.\TpadDriver_install_error.log'
+        $err_string,"`n",$error | out-file -filepath 'C:\temp\awscript\TpadDriver_install_error.log'
     }
 }
 
@@ -28,8 +28,13 @@ function get_payload {
 <# checks to see if all dependency files are fnished downloading 
     from MDM in current directory #>
     start-sleep(5)
-    $evaluate = test-path ".\SETUP.CAB", ".\setup.exe", 
-    ".\SetupTPDriver.msi", ".\D3F.exe",".\409.msi",".\update"
+    $evaluate = test-path "C:\temp\awscript\SETUP.CAB", 
+            "C:\temp\awscript\setup.exe", 
+            "C:\temp\awscript\SetupTPDriver.msi", 
+            "C:\temp\awscript\D3F.exe",
+            "C:\temp\awscript\409.msi",
+            "C:\temp\awscript\update"
+    
     if ($false -in $evaluate) {
         return $false
     } else {
@@ -54,7 +59,7 @@ function get_install_path {
 
 function install_atk {
     
-    start-process "msiexec.exe" -argumentlist "/i 409.msi /qn /norestart" -Wait
+    start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\409.msi /qn /norestart" -Wait
     if ($error) {
         return 'error'
     }
@@ -63,8 +68,8 @@ function install_atk {
 function install_smartgesture($install_path) {
 
     start-process "msiexec.exe" -argumentlist "/x {938CFBD4-0652-49E5-BB8B-153948865941} /qn /norestart"
-    start-process "msiexec.exe" -argumentlist "/i SetupTPDriver.msi /qn /norestart"
-    start-process "D3F.exe"
+    start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\SetupTPDriver.msi /qn /norestart"
+    start-process "C:\temp\awscript\D3F.exe"
     md $install_path -Force
     copy-item '.\update' -Force -destination "$install_path"
     if ($error) {
