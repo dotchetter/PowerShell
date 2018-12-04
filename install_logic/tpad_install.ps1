@@ -33,12 +33,12 @@ function get_payload {
 <# checks to see if all dependency files are fnished downloading 
     from MDM in current directory #>
     start-sleep(5)
-    $evaluate = test-path "C:\temp\awscript\gs\SETUP.CAB", 
-            "C:\temp\awscript\gs\setup.exe", 
-            "C:\temp\awscript\gs\SetupTPDriver.msi", 
-            "C:\temp\awscript\gs\D3F.exe",
-            "C:\temp\awscript\gs\409.msi",
-            "C:\temp\awscript\gs\update"
+    $evaluate = test-path "C:\temp\awscript\sg\SETUP.CAB", 
+            "C:\temp\awscript\sg\setup.exe", 
+            "C:\temp\awscript\sg\SetupTPDriver.msi", 
+            "C:\temp\awscript\sg\D3F.exe",
+            "C:\temp\awscript\sg\409.msi",
+            "C:\temp\awscript\sg\update"
     
     if ($false -in $evaluate) {
         return $false
@@ -64,7 +64,7 @@ function get_install_path {
 
 function install_atk {
     
-    start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\gs\409.msi /qn /norestart" -Wait
+    start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\sg\409.msi /qn /norestart" -Wait
     if ($error) {
         return 'error'
     }
@@ -73,8 +73,8 @@ function install_atk {
 function install_smartgesture($install_path) {
 
     start-process "msiexec.exe" -argumentlist "/x {938CFBD4-0652-49E5-BB8B-153948865941} /qn /norestart"
-    start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\gs\SetupTPDriver.msi /qn /norestart"
-    start-process "C:\temp\awscript\gs\D3F.exe"
+    start-process "msiexec.exe" -argumentlist "/i C:\temp\awscript\sg\SetupTPDriver.msi /qn /norestart"
+    start-process "C:\temp\awscript\sg\D3F.exe"
     md $install_path -Force
     copy-item '.\update' -Force -destination "$install_path"
     if ($error) {
@@ -86,6 +86,6 @@ function error_handler($error) {
 
     $err_count = $error.count
     $err_string = "$err_count errors occured. See verbose log below:"
-    $err_string,"`n",$error | out-file -filepath 'C:\temp\awscript\gs\TpadDriver_install_error.log'
+    $err_string,"`n",$error | out-file -filepath 'C:\temp\awscript\sg\TpadDriver_install_error.log'
 }
 main
