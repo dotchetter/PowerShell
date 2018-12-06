@@ -1,6 +1,6 @@
 
-[array]$ALL_APPS = get-appxpackage | select name
-[array]$REM_ARR = @(
+[array]$ALL_APPS = get-appxpackage -allusers
+[array]$REM_APPS = @(
 
     '*communicationsapps*',
     '*messaging*','*windowsfeedback*',
@@ -19,54 +19,69 @@
     '*officehub*','*zunevideo*'
 );
 
-
-# find out if process process is running and end it
-function stop($process){
-
-    $status = get-process | where {$_.name -like $process}
-    if ($status) {
-        get-process | where {$_.name -like $process} | stop-process
+function main() {
+<# execute app removal, registry modification and sets reg-value
+-to disable onedrive. If the file is run during oobe, next_logon() is 
+initiated.
+#>
+    $reg_path_setup = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\oobe\Stats'
+    $reg_path_onedrive = 'HKLM\Software\Policies\Microsoft\Windows\OneDrive'
+    $setup_finished = get-itemproperty -Path $reg_path_setup -name 'oobeusersignedin'
+    if ($setup_finished) {
+        stop('onedrive')
+        start-sleep(10)
+        reg add $reg_path_onedrive /v DisableFileSyncNGSC /t REG_DWORD /d 1 /f
+        gpupdate /wait:10
+        remove_apps $ALL_APPS $REM_APPS
+    } else {
+        next_logon
+    }
+    if ($error) {
+        error_handler($error)
     }
 }
 
-
-# uninstalls Apps in array and removes provisioned packages to prevent automatic re-install 
-function remove_app($app){
-    
-    get-appxpackage -allusers -name $app | remove-appxpackage
-    get-appxprovisionedpackage -Online | where {$_.packagename -like $app} | 
-    remove-appxprovisionedpackage -Online
+function stop($process) {
+# find out if process process is running and end it
+    $status = get-process -name *$process*
+    if ($status) {
+       $status.kill()
+    }
 }
 
-
-# execute app removal, registry modification and sets reg-value
-# -to disable onedrive if the file is run after oobe.
-function main(){
-
-    $reg_path_setup = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\oobe\Stats'
-    $reg_path_onedrive = 'HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive'
-
-    $setup_finished = get-itemproperty -Path $reg_path_setup -name 'oobeusersignedin'
-    if ($setup_finished){
-        stop('onedrive*')
-        start-sleep(10)
-        reg add $reg_path_onedrive /v DisableFileSyncNGSC /t REG_DWORD /d 1 /f
-        gpupdate /wait:30
-        foreach ($i in $ALL_APPS) {
-            foreach ($j in $REM_ARR) {if ($i -like $j) {remove_app($j)}
+function remove_apps($all, $removals) {
+<# uninstalls apps in array and removes provisioned packages 
+to prevent automatic re-install #>
+    foreach ($i in $removals) {
+        foreach ($j in $all) {
+            if ($j.name -like $i) {
+                get-appxpackage -allusers -Name $j.name | remove-appxpackage
+                get-appxprovisionedpackage -online | where {$_.packagename -like $j.name} |
+                remove-appxprovisionedpackage -online -allusers -packagename $j.name
             }
         }
     }
-    else {
-        $item = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce'
-        $command_one = 'powershell.exe -command set-executionpolicy bypass -force'
-        $command_two = 'start-process powershell.exe -windowstyle hidden {C:\temp\awscript\removeappxpkg.ps1}'
-        $value = ($command_one + '; ' + $command_two)
-        new-item -path $item -value $value -force
-        if ($Error) {
-            $Error | out-file $env:systemdrive\temp\awscript\ConfigScript_error.log
-        }
-    }
+}
+
+function next_logon() {
+<# if the script is run during OOBE by MDM downloading the script prior to
+the creation of a user profile, this function sets registry values that
+will execute the script upon next logon for the user.#>
+
+    $item = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+    $command_one = 'powershell.exe -command "set-executionpolicy bypass -force'
+    $command_two = 'start-process powershell.exe -windowstyle hidden {C:\temp\awscript\removeappxpkg.ps1}"'
+    $value = ($command_one + '; ' + $command_two)
+    $name = 'Run Config Script'
+    new-item -path "$item" -value "$value" -force
+    $error.clear()
+}
+
+function error_handler($error) {
+
+    $err_count = $error.count
+    $err_string = "$err_count error(s) occured. See verbose log below:"
+    $err_string,"`n",$error | out-file -filepath 'C:\temp\awscript\ConfigScript_error.log'
 }
 
 main
