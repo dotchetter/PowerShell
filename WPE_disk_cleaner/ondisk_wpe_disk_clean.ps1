@@ -43,6 +43,7 @@ $quit_btn.enabled = $true
 $quit_btn.left = 700
 $quit_btn.top = 530
 $quit_btn.backcolor = "Lavender"
+$quit_btn.font = "calibri"
 
 # HDD clean button
 $clean_btn = new-object system.windows.forms.button
@@ -52,14 +53,17 @@ $clean_btn.text = "Rensa hårddisken"
 $clean_btn.enabled = $false
 $clean_btn.left = 260 
 $clean_btn.top = 530
+$clean_btn.font = "calibri"
+
 
 <# verifier checkbox - are you sure you want to quick erase?
 this makes the quick erase button useable. #>
 $verifier = new-object system.windows.forms.checkbox
 $verifier.left = 260
 $verifier.top = 650
-$verifier.text = "Ja, jag vill rensa hårddisken"
+$verifier.text = "Jag är säker"
 $verifier.width = 250
+$verifier.font = "calibri"
 
 # done prompt
 $ok_box_type = [system.windows.messageboxbutton]::Ok
@@ -67,26 +71,31 @@ $info_box_icon = [system.windows.messageboximage]::Information
 $done_box_msg_body = "Rensningen är klar! Tryck OK för att stänga av datorn"
 $done_box_title = "Klar!"
 
-# working prompt
-$working_box_icon = [system.windows.messageboximage]::Information
-$working_box_msg_body = "Rensar disken. Detta tar bara några sekunder..."
-$working_box_title = "Rensning pågår"
-
 # error prompt
-$error_box_type
+$error_box_type = [system.windows.messageboxbutton]::Error
 $error_box_icon = [system.windows.messageboximage]::Error
 $error_err_1 = "Ett fel har uppstått."
 $error_err_2 = "Kontrollera att hårddisken fungerar och att den är inkopplad ordentligt."
 $error_box_msg_body = ($err_1 + $err_2)
 $error_box_title = "Ett fel uppstod!"
 
-# render objects
+# working - prompt
+$working_prompt = new-object system.windows.forms.label
+$working_prompt.width = 500
+$working_prompt.left = 520
+$working_prompt.top = 680
+$working_prompt.text = "Rensning pågår. Detta tar bara några sekunder..."
+$working_prompt.Font = "calibri"
+$working_prompt.Hide()
 
+# render objects
 $form.controls.add($clean_btn)
 $form.controls.add($verifier)
 $form.controls.add($quit_btn)
+$form.controls.add($working_prompt)
 
 # order objects
+$working_prompt.bringtofront()
 $clean_btn.bringtofront()
 $quit_btn.bringtofront()
 $verifier.bringtofront()
@@ -106,9 +115,10 @@ function done ($error) {
 $verifier_box_tick = {
     if ($verifier.checked -eq $true) {
         $clean_btn.enabled = $true
-        $clean_btn.backcolor = "Lavender"
+        $clean_btn.backcolor = "lavender"
     } else {
         $clean_btn.enabled = $false
+        $clean_btn.backcolor = "white"
     }
 }
 
@@ -118,16 +128,21 @@ $clean_btn_click = {
     $quit_btn.enabled = $false
     $clean_btn.backcolor = "white"
     $quit_btn.backcolor = "white"
-    $msg_box = [system.windows.messagebox]::Show($working_box_msg_body,$working_box_title,$ok_box_type,$info_box_icon)      
+    $working_prompt.show()
     $disk = get-disk | where -filterscript {$_.bustype -ne "USB"}
     $disk = $disk.number
     $clean_scr_pth = "$env:windir\System32\script\diskpart.dat"
-    "sel dis $disk
-    clean" > $clean_scr_pth
-
-    start-process "diskpart.exe" -argumentlist "/s $clean_scr_pth" -windowstyle hidden -wait
+    
+    # generate diskpart script for physical disk detected
+    {select disk $disk
+    clean
+    create par primary
+    format quick fs ntfs
+    clean
+    exit} > "x:\windws\System32\script\diskpart.dat"
+    start-process "cmd.exe" -argumentlist "/c diskpart.exe /s x:\windws\System32\script\diskpart.dat" -windowstyle hidden -wait
     done($error)
-    start-process "cmd.exe" -argumentlist "/c wpeutil shutdown" -windowstyle hidden
+    wpeutil shutdown
 }       
 
 # quit button listener
