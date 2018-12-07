@@ -10,8 +10,6 @@ public static extern IntPtr GetConsoleWindow();
 [DllImport("user32.dll")]
 public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
 '
-
-
 # form loop object init
 $form = new-object system.windows.forms.form
 $form.width = 1280
@@ -21,7 +19,6 @@ $form.autoscale = $true
 $form.autosize = $true
 $form.formborderstyle = "None"
 $form.backcolor = 'white'
-
 
 # welcome page picture
 $img = [system.drawing.image]::Fromfile("$env:windir\System32\script\header2.png")
@@ -55,7 +52,6 @@ $clean_btn.left = 260
 $clean_btn.top = 530
 $clean_btn.font = "calibri"
 
-
 <# verifier checkbox - are you sure you want to quick erase?
 this makes the quick erase button useable. #>
 $verifier = new-object system.windows.forms.checkbox
@@ -82,11 +78,11 @@ $error_box_title = "Ett fel uppstod!"
 # working - prompt
 $working_prompt = new-object system.windows.forms.label
 $working_prompt.width = 500
-$working_prompt.left = 500
+$working_prompt.left = 470
 $working_prompt.top = 680
 $working_prompt.text = "Rensning pågår. Detta tar bara några sekunder..."
 $working_prompt.Font = "calibri"
-$working_prompt.Hide()
+$working_prompt.hide()
 
 # render objects
 $form.controls.add($clean_btn)
@@ -100,15 +96,19 @@ $clean_btn.bringtofront()
 $quit_btn.bringtofront()
 $verifier.bringtofront()
 
+
 function done ($error) {
 
     if (-not $error) {
+        $working_prompt.text = "Klart!"
         $msg_box = [system.windows.messagebox]::Show($done_box_msg_body,$done_box_title,$ok_box_type,$info_box_icon)
     } else {
+        $working_prompt.text = "$error"
         $msg_box = [system.windows.messagebox]::Show($error_box_msg_body,$error_box_title,$error_box_type,$error_box_icon)
-        $error > \err.l
     }
+    wpeutil shutdown
 }
+
 
 # event listeners:
 # tickbox for verification listener
@@ -129,19 +129,8 @@ $clean_btn_click = {
     $clean_btn.backcolor = "white"
     $quit_btn.backcolor = "white"
     $working_prompt.show()
-    $disk = get-disk | where -filterscript {$_.bustype -ne "USB"}
-    $disk = $disk.number
-    
-    # generate diskpart script for physical disk detected
-    {select disk $disk
-    clean
-    create par primary
-    format quick fs ntfs
-    clean
-    exit} > "x:\windows\System32\script\diskpart.dat"
-    start-process "cmd.exe" -argumentlist "/c diskpart.exe /s x:\windows\System32\script\diskpart.dat" -windowstyle hidden -wait
+    start-process "diskpart" -argumentlist "/s x:\windows\System32\script\diskpart.dat" -windowstyle hidden -wait
     done($error)
-    wpeutil shutdown
 }       
 
 # quit button listener
@@ -149,19 +138,19 @@ $quit_btn_click = {
     wpeutil shutdown
 }       
 
+# add click functionality for objects
 $clean_btn.add_click($clean_btn_click)
 $quit_btn.add_click($quit_btn_click)
 $verifier.add_click($verifier_box_tick)
 
 
 # hide console window
-
-function hideconsole
+function hide_console
 {
-    $consolePtr = [Console.Window]::GetConsoleWindow()
-    [Console.Window]::ShowWindow($consolePtr, 0) #0 hide
+    $console_window = [console.window]::getconsolewindow()
+    [console.window]::showwindow($console_window, 0) #0 = hide
 }
 
 # form loop
-hideconsole
+hide_console
 $null = $form.showdialog()

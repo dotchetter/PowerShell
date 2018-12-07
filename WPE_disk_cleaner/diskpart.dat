@@ -1,0 +1,5 @@
+sel dis 0 
+clean
+create par primary
+format quick fs ntfs
+clean
