@@ -82,7 +82,7 @@ $error_box_title = "Ett fel uppstod!"
 # working - prompt
 $working_prompt = new-object system.windows.forms.label
 $working_prompt.width = 500
-$working_prompt.left = 520
+$working_prompt.left = 500
 $working_prompt.top = 680
 $working_prompt.text = "Rensning pågår. Detta tar bara några sekunder..."
 $working_prompt.Font = "calibri"
@@ -131,7 +131,6 @@ $clean_btn_click = {
     $working_prompt.show()
     $disk = get-disk | where -filterscript {$_.bustype -ne "USB"}
     $disk = $disk.number
-    $clean_scr_pth = "$env:windir\System32\script\diskpart.dat"
     
     # generate diskpart script for physical disk detected
     {select disk $disk
@@ -139,8 +138,8 @@ $clean_btn_click = {
     create par primary
     format quick fs ntfs
     clean
-    exit} > "x:\windws\System32\script\diskpart.dat"
-    start-process "cmd.exe" -argumentlist "/c diskpart.exe /s x:\windws\System32\script\diskpart.dat" -windowstyle hidden -wait
+    exit} > "x:\windows\System32\script\diskpart.dat"
+    start-process "cmd.exe" -argumentlist "/c diskpart.exe /s x:\windows\System32\script\diskpart.dat" -windowstyle hidden -wait
     done($error)
     wpeutil shutdown
 }       
