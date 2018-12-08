@@ -4,7 +4,7 @@
 This file is designed to run in winpe / winfe. It serves a simple purpose:
 Enable non-technical users to boot from a USB device and clean the harddrive of a system. 
 * Disclaimer * 
-This software passes commands to built-in DISKPART sofware in Microsoft® Windows.
+This software passes commands to built-in DISKPART sofware in Windows.
 Currently, the command CLEAN is used to empty the internal drive 0 from all data including
 recovery partition(s), including efi partition or system partition as well as operating system partition. 
 Although data is deleted, the drive is NOT cleaned for secure data loss. This tool quickly erases the drive.
