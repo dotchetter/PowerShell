@@ -19,7 +19,7 @@ Please note that all buttons and prompts are written in Swedish and the file sho
 unless rewritten to English.
 
 ## How to use
-* Download scrpit
+* Clone repository
 * Create a Winpe / Winfe usb drive with powershell added:
   https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/winpe-adding-powershell-support-to-windows-pe
 
@@ -28,9 +28,7 @@ unless rewritten to English.
 	(PS): dism /mount-image /imagefile:"<DRIVELETTER>:\sources\boot.wim" /index:1 /mountdir:C:\mount
 
 * Navigate to C:\mount\windows\system32 and create folder "script"
-* Copy the script to the C:\mount\windows\system32\script
-* Copy the diskpart.dat file to C:\mount\windows\system32\script
-* Copy the startnet.cmd to C:\mount\windows\system32 and replace the old file
+* Copy the repository to C:\mount\windows\system32\script
 * Load custom picture to render in the form (line 23) to the same directory and rename it appropriately, or change file path in line 23. 
 * Commit the changes to the .wim and unmount
 	(PS): dism /unmount-image /mountdir:C:\mount /commit
