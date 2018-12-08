@@ -81,6 +81,7 @@ $working_prompt.top = 680
 $working_prompt.text = "Rensning pågår. Detta tar bara några sekunder..."
 $working_prompt.font = "calibri"
 $working_prompt.hide()
+$diskpart_script = "x:\windows\System32\windows\script\diskpart.dat"
 
 # render objects
 $form.controls.add($clean_btn)
@@ -131,7 +132,7 @@ $clean_btn_click = {
     $clean_btn.backcolor = "white"
     $quit_btn.backcolor = "white"
     $working_prompt.show() # shows that cleaning is in progress
-    start-process "diskpart" -argumentlist  -windowstyle hidden -wait
+    start-process "diskpart" -argumentlist $diskpart_script -windowstyle hidden -wait
     done($error)
 }       
 
