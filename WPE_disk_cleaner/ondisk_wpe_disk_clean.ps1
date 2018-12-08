@@ -1,7 +1,6 @@
 
 # load assemblies
 [void][system.reflection.assembly]::loadwithpartialname("system.windows.forms") 
-[void][system.reflection.assembly]::loadwithpartialname("microsoft.visualbasic")
 add-type -AssemblyName PresentationCore,PresentationFramework
 add-Type -name window -namespace console -memberdefinition '
 [DllImport("Kernel32.dll")]
@@ -22,7 +21,6 @@ $form.backcolor = 'white'
 
 # welcome page picture
 $img = [system.drawing.image]::Fromfile("$env:windir\System32\script\header2.png")
-
 $pictureBox = new-object Windows.Forms.PictureBox
 $pictureBox.width = 1280
 $pictureBox.height = 768
@@ -75,13 +73,13 @@ $error_err_2 = "Kontrollera att hårddisken fungerar och att den är inkopplad o
 $error_box_msg_body = ($err_1 + $err_2)
 $error_box_title = "Ett fel uppstod!"
 
-# working - prompt
+# disk clean in progress prompt
 $working_prompt = new-object system.windows.forms.label
 $working_prompt.width = 500
 $working_prompt.left = 470
 $working_prompt.top = 680
 $working_prompt.text = "Rensning pågår. Detta tar bara några sekunder..."
-$working_prompt.Font = "calibri"
+$working_prompt.font = "calibri"
 $working_prompt.hide()
 
 # render objects
@@ -132,8 +130,8 @@ $clean_btn_click = {
     $quit_btn.enabled = $false
     $clean_btn.backcolor = "white"
     $quit_btn.backcolor = "white"
-    $working_prompt.show()
-    start-process "diskpart" -argumentlist "/s x:\windows\System32\script\diskpart.dat" -windowstyle hidden -wait
+    $working_prompt.show() # shows that cleaning is in progress
+    start-process "diskpart" -argumentlist  -windowstyle hidden -wait
     done($error)
 }       
 
