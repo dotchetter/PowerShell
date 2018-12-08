@@ -25,7 +25,7 @@ unless rewritten to English.
 
 * Mount the 'boot.wim' file on the USB drive created. 
 	(PS): md -f c:\mount
-	(PS): dism /mount-image /imagefile:<DRIVELETTER>:\sources\boot.wim /index:1 /mountdir:C:\mount
+	(PS): dism /mount-image /imagefile:DRIVELETTER:\sources\boot.wim /index:1 /mountdir:C:\mount
 
 * Navigate to C:\mount\windows\system32 and create folder "script"
 * Copy the repository to C:\mount\windows\system32\script
