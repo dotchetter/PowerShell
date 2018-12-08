@@ -24,7 +24,9 @@ unless rewritten to English.
   https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/winpe-adding-powershell-support-to-windows-pe
 
 * Mount the 'boot.wim' file on the USB drive created. 
+
 	(PS): md -f c:\mount
+	
 	(PS): dism /mount-image /imagefile:DRIVELETTER:\sources\boot.wim /index:1 /mountdir:C:\mount
 
 * Navigate to C:\mount\windows\system32 and create folder "script"
