@@ -25,8 +25,7 @@ function compute ($array, $x, $y) {
 
 
 # hide console window
-function hide_console
-{
+function hide_console {
     $console_window = [console.window]::getconsolewindow()
     [console.window]::showwindow($console_window, 0) #0 = hide
 }
