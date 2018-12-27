@@ -1,7 +1,6 @@
 
-# load frameworks
+# load assemblies
 [void][system.reflection.assembly]::loadwithpartialname("system.windows.forms") 
-[void][system.reflection.assembly]::loadwithpartialname("microsoft.visualbasic")
 add-type -AssemblyName PresentationCore,PresentationFramework
 add-Type -name window -namespace console -memberdefinition '
 [DllImport("Kernel32.dll")]
@@ -22,7 +21,6 @@ $form.backcolor = 'white'
 
 # welcome page picture
 $img = [system.drawing.image]::Fromfile("$env:windir\System32\script\header2.png")
-
 $pictureBox = new-object Windows.Forms.PictureBox
 $pictureBox.width = 1280
 $pictureBox.height = 768
@@ -46,7 +44,7 @@ $quit_btn.font = "calibri"
 $clean_btn = new-object system.windows.forms.button
 $clean_btn.height = 100
 $clean_btn.width = 300
-$clean_btn.text = "Rensa hårddisken"
+$clean_btn.text = "Rensa hÃ¥rddisken"
 $clean_btn.enabled = $false
 $clean_btn.left = 260 
 $clean_btn.top = 530
@@ -57,32 +55,33 @@ this makes the quick erase button useable. #>
 $verifier = new-object system.windows.forms.checkbox
 $verifier.left = 260
 $verifier.top = 650
-$verifier.text = "Jag är säker"
+$verifier.text = "Jag Ã¤r sÃ¤ker"
 $verifier.width = 250
 $verifier.font = "calibri"
 
 # done prompt
 $ok_box_type = [system.windows.messageboxbutton]::Ok
 $info_box_icon = [system.windows.messageboximage]::Information
-$done_box_msg_body = "Rensningen är klar! Tryck OK för att stänga av datorn"
+$done_box_msg_body = "Rensningen Ã¤r klar! Tryck OK fÃ¶r att stÃ¤nga av datorn"
 $done_box_title = "Klar!"
 
 # error prompt
 $error_box_type = [system.windows.messageboxbutton]::Error
 $error_box_icon = [system.windows.messageboximage]::Error
-$error_err_1 = "Ett fel har uppstått."
-$error_err_2 = "Kontrollera att hårddisken fungerar och att den är inkopplad ordentligt."
+$error_err_1 = "Ett fel har uppstÃ¥tt."
+$error_err_2 = "Kontrollera att hÃ¥rddisken fungerar och att den Ã¤r inkopplad ordentligt."
 $error_box_msg_body = ($err_1 + $err_2)
 $error_box_title = "Ett fel uppstod!"
 
-# working - prompt
+# disk clean in progress prompt
 $working_prompt = new-object system.windows.forms.label
 $working_prompt.width = 500
 $working_prompt.left = 470
 $working_prompt.top = 680
-$working_prompt.text = "Rensning pågår. Detta tar bara några sekunder..."
-$working_prompt.Font = "calibri"
+$working_prompt.text = "Rensning pÃ¥gÃ¥r. Detta tar bara nÃ¥gra sekunder..."
+$working_prompt.font = "calibri"
 $working_prompt.hide()
+$diskpart_script = "x:\windows\System32\windows\script\diskpart.dat"
 
 # render objects
 $form.controls.add($clean_btn)
@@ -101,10 +100,14 @@ function done ($error) {
 
     if (-not $error) {
         $working_prompt.text = "Klart!"
-        $msg_box = [system.windows.messagebox]::Show($done_box_msg_body,$done_box_title,$ok_box_type,$info_box_icon)
+        $msg_box = [system.windows.messagebox]::Show(
+            $done_box_msg_body,$done_box_title,
+            $ok_box_type,$info_box_icon)
     } else {
         $working_prompt.text = "$error"
-        $msg_box = [system.windows.messagebox]::Show($error_box_msg_body,$error_box_title,$error_box_type,$error_box_icon)
+        $msg_box = [system.windows.messagebox]::Show(
+            $error_box_msg_body,$error_box_title,
+            $error_box_type,$error_box_icon)
     }
     wpeutil shutdown
 }
@@ -128,8 +131,8 @@ $clean_btn_click = {
     $quit_btn.enabled = $false
     $clean_btn.backcolor = "white"
     $quit_btn.backcolor = "white"
-    $working_prompt.show()
-    start-process "diskpart" -argumentlist "/s x:\windows\System32\script\diskpart.dat" -windowstyle hidden -wait
+    $working_prompt.show() # shows that cleaning is in progress
+    start-process "diskpart" -argumentlist $diskpart_script -windowstyle hidden -wait
     done($error)
 }       
 
