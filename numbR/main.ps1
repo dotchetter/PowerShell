@@ -1,60 +1,54 @@
-# import modules
+# Developed for Advania Sverige AB by Simon Olofsson
+# Module file for application "NumbR"
 
+
+
+# Import modules
 . ($psscriptroot + "\gui.ps1")
 . ($psscriptroot + "\logic.ps1")
+. ($psscriptroot + "\_event_listnrs.ps1")
 
-## button click listeners
 
 
-# add cost to calculation
-$add_cost_btn_click = {
+# Initialize variable
+$global:all_cost_sum = 0
 
-    $input_box.text = $input_box.text.replace(',','.')
-    if ($input_box.text.contains(';')) {
-        foreach ($i in $input_box.text.split(';')) {
-            $all_cost_box.text += "$i`r`n"
-            $global:all_cost_sum += $i
-        }
-    } 
-    else {
-        $global:all_cost_sum += $input_box.text
-        $all_cost_box.text += $input_box.text
-        $all_cost_box.text += "`r`n"
-    }
-    $input_box.text = $null
-}
-    
 
-# reset application and enable disabled features
-$reset_btn_click = {
 
-     $all_cost_box.text = $null
-     $global:all_cost_sum = 0
-     $all_cost_box.text = $null
-     $sum_box.text = $null
-     $sum_button.enabled = $true
-     $add_cost.enabled = $true
+# Read json file and create instance object
+$json = cat "$env:userprofile\git\powershell\numbr\data.json" | convertfrom-json
+
+
+
+<# Load values for mathematic calculations.
+Multiplicands, shipping and labour costs are loaded from json.
+
+$multi_x = operand is <= 499, $multi_y = operand is >= 500 
+mac_increment refers to the increased labour cost for mac repair. #>
+
+# Set state depending on radio buttons
+if ($state_checkbox_mac.checked) {
+    $labour_cost = 'maclabour'
+} else {
+    $labour_cost = 'pclabour'
 }
 
 
-# calculate sum with function call and return to sum_box.text
-$sum_btn_click = {
- 
-    $sumint = compute $global:all_cost_sum $multi_x $multi_y
-    $sum_box.text = $sumint
-    $sum_button.enabled = $false
-    $add_cost.enabled = $false
-}
+$multi_x = load_data 'x' $json
+$multi_y = load_data 'y' $json
+$ship_cost = load_data 'ship' $json
+$labour_cost = load_data $labour_cost $json
 
 
-# click functionality for objects
+
+# Click functionality for objects
 $add_cost.add_click($add_cost_btn_click)
 $reset.add_click($reset_btn_click)
 $sum_button.add_click($sum_btn_click)
+$state_checkbox_mac.add_click($state_checkbox_mac)
+$state_checkbox_pc.add_click($state_checkbox_pc)
 
-
-
-# form loop
+# Form loop
 hide_console
 [system.windows.forms.application]::enablevisualstyles();
-$null = $form.showdialog()
+$form.showdialog()
