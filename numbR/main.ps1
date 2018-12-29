@@ -2,6 +2,10 @@
 # Module file for application "NumbR"
 
 
+# Initialize variable
+$global:all_cost_sum = 0
+$install_path = "$env:userprofile\git\powershell\NumbR"
+
 
 # Import modules
 . ($psscriptroot + "\gui.ps1")
@@ -10,13 +14,8 @@
 
 
 
-# Initialize variable
-$global:all_cost_sum = 0
-
-
-
 # Read json file and create instance object
-$json = cat "$env:userprofile\git\powershell\numbr\data.json" | convertfrom-json
+$json = cat "$env:userprofile\git\powershell\NumbR\data.json" | convertfrom-json
 
 
 
@@ -45,8 +44,7 @@ $labour_cost = load_data $labour_cost $json
 $add_cost.add_click($add_cost_btn_click)
 $reset.add_click($reset_btn_click)
 $sum_button.add_click($sum_btn_click)
-$state_checkbox_mac.add_click($state_checkbox_mac)
-$state_checkbox_pc.add_click($state_checkbox_pc)
+
 
 # Form loop
 hide_console

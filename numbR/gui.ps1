@@ -3,7 +3,7 @@
 
 [void][system.reflection.assembly]::loadwithpartialname("system.windows.forms") 
 [void][system.reflection.assembly]::loadwithpartialname("microsoft.visualbasic")
-add-type -AssemblyName PresentationCore,PresentationFramework
+add-type -assemblyname presentationcore,presentationframework
 add-Type -name window -namespace console -memberdefinition '
 [DllImport("Kernel32.dll")]
 public static extern IntPtr GetConsoleWindow();
@@ -13,7 +13,7 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
 '
 
 # background image in form
-$bg_img = [system.drawing.image]::fromfile("$env:userprofile\git\powershell\numbR\meta\bg_2.png")
+$bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_2.png")
 
 
 # GUI form properties
@@ -33,15 +33,15 @@ $form.maximizebox = $false
 # input price box
 $input_box = new-object system.windows.forms.textbox
 $input_box.autosize = $true
-$input_box.top = 150
-$input_box.left = 75
+$input_box.top = 145
+$input_box.left = 85
 $input_box.width = 300
 
 
 # 'add cost' button
 $add_cost = new-object system.windows.forms.button
-$add_cost.top = 185
-$add_cost.left = 75
+$add_cost.top = 180
+$add_cost.left = 85
 $add_cost.width = 300
 $add_cost.height = 30
 $add_cost.text = 'lägg till'
@@ -49,8 +49,8 @@ $add_cost.text = 'lägg till'
 
 # reset application button
 $reset = new-object system.windows.forms.button
-$reset.top = 218
-$reset.left = 75
+$reset.top = 215
+$reset.left = 85
 $reset.width = 300
 $reset.height = 30
 $reset.text = 'nollställ'
@@ -58,8 +58,8 @@ $reset.text = 'nollställ'
 
 # incremental list with all objects
 $all_cost_box = new-object system.windows.forms.listbox
-$all_cost_box.top = 280
-$all_cost_box.left = 75
+$all_cost_box.top = 300
+$all_cost_box.left = 86
 $all_cost_box.width = 145
 $all_cost_box.height = 300
 $all_cost_box.selectionmode = "multiextended"
@@ -67,17 +67,17 @@ $all_cost_box.selectionmode = "multiextended"
 
 # incremental list with calculated objects
 $all_calculated_box = new-object system.windows.forms.listbox
-$all_calculated_box.top = 280
-$all_calculated_box.left = 228
-$all_calculated_box.width = 145
+$all_calculated_box.top = 300
+$all_calculated_box.left = 243
+$all_calculated_box.width = 140
 $all_calculated_box.height = 300
 $all_calculated_box.selectionmode = "multiextended"
 
 
 # calculate button
 $sum_button = new-object system.windows.forms.button
-$sum_button.top = 590
-$sum_button.left = 74
+$sum_button.top = 610
+$sum_button.left = 84
 $sum_button.width = 300
 $sum_button.text = 'beräkna'
 $sum_button.height = 30
@@ -85,8 +85,8 @@ $sum_button.height = 30
 
 # Left pane sum box
 $sum_box = new-object system.windows.forms.textbox
-$sum_box.top = 650
-$sum_box.left = 75
+$sum_box.top = 670
+$sum_box.left = 85
 $sum_box.width = 143
 $sum_box.height = 30
 $sum_box.autosize = $true
@@ -96,8 +96,8 @@ $sum_box.readonly = $true
 
 # Right pane sum box with miscellaneous (freight, shipping)
 $misc_sum_box = new-object system.windows.forms.textbox
-$misc_sum_box.top = 650
-$misc_sum_box.left = 230
+$misc_sum_box.top = 670
+$misc_sum_box.left = 240
 $misc_sum_box.width = 143
 $misc_sum_box.height = 30
 $misc_sum_box.autosize = $true
@@ -105,16 +105,16 @@ $misc_sum_box.multiline = $true
 $misc_sum_box.readonly = $true
 
 
-# state tickbox (mac)
+# State tickbox (mac)
 $state_checkbox_mac = new-object system.windows.forms.radiobutton
-$state_checkbox_mac.location = '75, 700'
+$state_checkbox_mac.location = '125, 720'
 $state_checkbox_mac.size = '58, 20'
 $state_checkbox_mac.text = "Mac"
 $state_checkbox_mac.checked = $true
 $state_checkbox_mac.backcolor = 'white'
 
 
-# state tickbox (pc)
+# State tickbox (pc)
 $state_checkbox_pc = new-object system.windows.forms.radiobutton
 $state_checkbox_pc.location = '75, 720'
 $state_checkbox_pc.size = '58, 20'
