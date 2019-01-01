@@ -7,6 +7,7 @@
 $font = new-object system.drawing.font('segoe ui', 11)
 $form = new-object system.windows.forms.form
 $form.font = $font
+$form.text = 'NumbR  -  Alpha  v. 0.0.4'
 $form.topmost = $true
 $form.opacity = 99
 $form.icon = $icon
