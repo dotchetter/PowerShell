@@ -123,6 +123,15 @@ $rounding_off_checkbox.top = 30
 $rounding_off_checkbox.left = 0
 
 
+# Save data buttons
+$save_data_button = new-object system.windows.forms.button
+$save_data_button.top = 430
+$save_data_button.left = 620
+$save_data_button.width = 300
+$save_data_button.height = 30
+$save_data_button.text = 'Spara'
+
+
 # Render objects
 $form.controls.addrange(@(
 
@@ -134,7 +143,8 @@ $form.controls.addrange(@(
     $upper_multiplicand_box,
     $lower_multiplicand_box, 
     $ship_cost_box,
-    $labour_box
+    $labour_box,
+    $save_data_button
     )
 )
 

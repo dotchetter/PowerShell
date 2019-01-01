@@ -32,7 +32,6 @@ $add_cost.height = 30
 $add_cost.text = 'Lägg till'
 
 
-
 # left pane incremental list with costs
 $lpane_list = new-object system.windows.forms.listbox
 $lpane_list.top = 300

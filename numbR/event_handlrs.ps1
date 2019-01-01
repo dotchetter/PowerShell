@@ -4,10 +4,12 @@
 
 
 
-function add_cost_btn() {
+function add_cost() {
+<#  Handle button clicked where user wants to add costs to calculation.
+    Parse textbox text for ';' and separate numbers. Call functions to perform
+    math on each value.#>
 
-    while ($input_box.text) {
-    
+    while ($input_box.text -match '^[0-9\;.,s]+$') {
         $input_box.text = $input_box.text.replace(',','.')
         if ($input_box.text.contains(';')) {
             foreach ($i in $input_box.text.split(';')) {
@@ -24,23 +26,8 @@ function add_cost_btn() {
         }
         $input_box.text = $null
     }
-
 }
 
-
-
-function reset_btn() {
-
-    set_global_values
-    set_rpane_values
-    $rpane_list.items.clear()
-    $lpane_list.items.clear()
-    $net_sum_box.text = '0,00 Kr'
-    $gross_sum_box.text = '0,00 Kr'
-    $lpane_list.text = $null
-    $sum_button.enabled = $true
-    $add_cost.enabled = $true
-}
 
 
 

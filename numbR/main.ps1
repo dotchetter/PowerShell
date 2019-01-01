@@ -51,10 +51,9 @@ $dark_mode_shifters = @(
 )
 
 
-# Load color mode from JSON
-$color_mode = load_data 'darkmode' 'true' $json
 
-if ($color_mode -eq 0) {
+# Load color mode, app state and rounding state from JSON
+if ($json.darkmode -eq 0) {
     $color_mode = 'bright'
     $bright_mode_checkbox.checked = $true
 } else {
@@ -64,23 +63,28 @@ if ($color_mode -eq 0) {
 
 
 # Load last state from JSON
-$laststate = load_data 'laststate' 'mac' $json
-
-if ($laststate -eq 0) {
+if ($json.laststate -eq 'pc') {
     $state_checkbox_pc.checked = $true
 } else {
     $state_checkbox_mac.checked = $true
 }
 
 
+# Load rounding state from JSON
+if ($json.rounding -eq 1) {
+    $rounding_on_checkbox.checked = $true
+} else {
+    $rounding_off_checkbox.checked = $true
+}
+
+
 # Function calls, see separate module 'logic.ps1'
 hide_console
-reset_btn
+reset_app
 set_global_values
 set_rpane_values
 set_color_mode $color_mode $dark_mode_shifters
 set_background $color_mode
-set_rounding
 
 
 
