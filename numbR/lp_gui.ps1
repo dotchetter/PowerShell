@@ -28,7 +28,7 @@ $add_cost.top = 180
 $add_cost.left = 85
 $add_cost.width = 300
 $add_cost.height = 30
-$add_cost.text = 'lägg till'
+$add_cost.text = 'Lägg till'
 
 
 
@@ -55,7 +55,7 @@ $sum_button = new-object system.windows.forms.button
 $sum_button.top = 215
 $sum_button.left = 85
 $sum_button.width = 300
-$sum_button.text = 'beräkna'
+$sum_button.text = 'Beräkna'
 $sum_button.height = 30
 
 
@@ -89,7 +89,7 @@ $reset.top = 625
 $reset.left = 85
 $reset.width = 300
 $reset.height = 30
-$reset.text = 'nollställ'
+$reset.text = 'Nollställ'
 
 
 # Copy right side listbox to clipboard button

@@ -6,6 +6,7 @@
 # Load framework and GUI dependencies
 [void][system.reflection.assembly]::loadwithpartialname("system.windows.forms") 
 [void][system.reflection.assembly]::loadwithpartialname("system.drawing") 
+[system.windows.forms.application]::enablevisualstyles();
 add-type -assemblyname presentationcore,presentationframework
 add-type -name window -namespace console -memberdefinition '
 [DllImport("Kernel32.dll")]
@@ -90,5 +91,4 @@ foreach ($i in $global_vars) {
 
 
 # Form loop
-[system.windows.forms.application]::enablevisualstyles();
 $form.showdialog()
