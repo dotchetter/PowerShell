@@ -8,12 +8,8 @@ $font = new-object system.drawing.font('segoe ui', 11)
 $form = new-object system.windows.forms.form
 $form.font = $font
 $form.topmost = $true
-$form.width = $bg_img.width + 15
-$form.height = $bg_img.height + 30
-$form.opacity = .99
-$form.backgroundimage = $bg_img
+$form.opacity = 99
 $form.icon = $icon
-$form.backgroundimagelayout = 'center'
 $form.formborderstyle = 'fixedsingle'
 $form.maximizebox = $false
 
@@ -34,14 +30,6 @@ $add_cost.width = 300
 $add_cost.height = 30
 $add_cost.text = 'lägg till'
 
-
-# reset application button
-$reset = new-object system.windows.forms.button
-$reset.top = 215
-$reset.left = 85
-$reset.width = 300
-$reset.height = 30
-$reset.text = 'nollställ'
 
 
 # left pane incremental list with costs
@@ -64,64 +52,67 @@ $rpane_list.selectionmode = "multiextended"
 
 # calculate button
 $sum_button = new-object system.windows.forms.button
-$sum_button.top = 610
-$sum_button.left = 84
+$sum_button.top = 215
+$sum_button.left = 85
 $sum_button.width = 300
 $sum_button.text = 'beräkna'
 $sum_button.height = 30
 
 
-# Left pane sum box, multiplied but not increased with freight or shipping
+# Left side sum box, multiplied but not increased with freight or shipping
 $gross_sum_box = new-object system.windows.forms.textbox
-$gross_sum_box.top = 670
+$gross_sum_box.top = 690
 $gross_sum_box.left = 85
 $gross_sum_box.width = 143
 $gross_sum_box.height = 30
 $gross_sum_box.autosize = $true
 $gross_sum_box.multiline = $true
 $gross_sum_box.readonly = $true
-$gross_sum_box.text = '0.00'
+$gross_sum_box.text = '0.00 Kr'
 
 
-# Right pane sum box, multiplied and freight + shipping added
+# Right side sum box, multiplied and freight + shipping added
 $net_sum_box = new-object system.windows.forms.textbox
-$net_sum_box.top = 670
+$net_sum_box.top = 690
 $net_sum_box.left = 240
 $net_sum_box.width = 143
 $net_sum_box.height = 30
 $net_sum_box.autosize = $true
 $net_sum_box.multiline = $true
 $net_sum_box.readonly = $true
-$net_sum_box.text = '0.00'
+$net_sum_box.text = '0.00 Kr'
 
 
-# State tickbox (mac)
-$state_checkbox_mac = new-object system.windows.forms.radiobutton
-$state_checkbox_mac.location = '645, 520'
-$state_checkbox_mac.size = '58, 20'
-$state_checkbox_mac.text = "Mac"
-$state_checkbox_mac.checked = $true
-$state_checkbox_mac.backcolor = 'white'
+# reset application button
+$reset = new-object system.windows.forms.button
+$reset.top = 625
+$reset.left = 85
+$reset.width = 300
+$reset.height = 30
+$reset.text = 'nollställ'
 
 
-# State tickbox (pc)
-$state_checkbox_pc = new-object system.windows.forms.radiobutton
-$state_checkbox_pc.location = '555, 520'
-$state_checkbox_pc.size = '58, 20'
-$state_checkbox_pc.text = "PC"
-$state_checkbox_pc.checked = $false
-$state_checkbox_pc.backcolor = 'white'
+# Copy right side listbox to clipboard button
+$clipboard_button = new-object system.windows.forms.button
+$clipboard_button.top = 590
+$clipboard_button.left = 85
+$clipboard_button.width = 300
+$clipboard_button.height = 30
+$clipboard_button.text = 'Kopiera till urklipp'
 
 
 # -- render objects
 
-$form.controls.add($input_box)
-$form.controls.add($add_cost)
-$form.controls.add($lpane_list)
-$form.controls.add($rpane_list)
-$form.controls.add($reset)
-$form.controls.add($gross_sum_box)
-$form.controls.add($sum_button)
-$form.controls.add($net_sum_box)
-$form.controls.add($state_checkbox_mac)
-$form.controls.add($state_checkbox_pc)
+$form.controls.addrange(@(
+
+    $input_box,
+    $add_cost,
+    $lpane_list,
+    $rpane_list,
+    $reset,
+    $gross_sum_box,
+    $sum_button,
+    $net_sum_box,
+    $clipboard_button
+    )
+)

@@ -3,9 +3,7 @@
 # Module purpose: application backend logic
 
 
-
 function get_state() {
-    
     <# Get the current state of the application by reading status of
     the radio button. If Mac is selected, all variables for Mac repair
     are loaded from json. Otherwise, PC variables are loaded. #>
@@ -19,9 +17,7 @@ function get_state() {
 }
 
 
-
 function compute_lpane_sum($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
-
     <# Calculate the sum of left pane, which contains gross prices. Strings are 
     converted to integers and math performed on these operands. 
     Sum returned to be displayed in $gross_sum_box #>
@@ -29,50 +25,47 @@ function compute_lpane_sum($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
     foreach ($num in $cost.items) {
         $num = (0 + $num)
         if ($num -le $low_lim) {
-            $num = $num * $low_mult # 1.4
+            $num = ($num * $low_mult)
         } elseif ($num -ge $upp_lim) {
-            $num = $num * $upp_mult # 1.2
-        }   
+            $num = ($num * $upp_mult)
+        }
         $cost_sum += $num
     }
- 
-    $cost_sum = [math]::round($cost_sum, [system.midpointrounding]::awayfromzero)
     return "$cost_sum Kr"
 }
 
 
-
 function compute_rpane_sum($num, $labour_cost, $ship_cost) {
-
     <# Calculate the sum of shipping with labour added to the total sum
     of costs in right pane.  #>
 
     $num = $num.trim('Kr')
     $num = (0 + $num)
-    $misc_sum = ($num + $labour_cost + $ship_cost)
-    return "$misc_sum Kr "
+    $rpane_sum = ($num + $labour_cost + $ship_cost)
+    
+    if ($rounding_on_checkbox.checked -eq $true) {
+        $rpane_sum = ([math]::round($rpane_sum, 0))
+    }
+
+    return "$rpane_sum Kr "
 }
 
 
-
 function compute_rpane_member($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
-
     <# Calculate individual numbers added by the user to be displayed
     in the right pane. #>
     
     $cost = (0 + $cost)
-    if ($cost -le $low_lim) {
-        $cost = $cost * $low_mult # 1.4
-    } elseif ($cost -ge $upp_lim) {
-        $cost = $cost * $upp_mult # 1.2
+    if ($cost -le $low_lim) {    
+        $cost = $cost * $low_mult    
+    } elseif ($cost -ge $upp_lim) {    
+        $cost = $cost * $upp_mult
     }
     return $cost
 }
 
 
-
 function set_rpane_values() {
-
     # set values in right pane boxes from global variables
 
     $labour_box.text = $global:labour
@@ -84,9 +77,7 @@ function set_rpane_values() {
 }
 
 
-
 function load_data($state, $value, $json) {
-
     <# Load attribute data from JSON containing multiplicands, 
     shipping cost and labour cost generated from GUI by the user. 
     State refers to PC or Mac values to load from JSON.#>
@@ -97,13 +88,10 @@ function load_data($state, $value, $json) {
 }
 
 
-
 function save_data() {
-
     # Todo. Save data to JSON from assigned values in boxes
 
 }
-
 
 
 function hide_console() {
@@ -114,9 +102,7 @@ function hide_console() {
 }
 
 
-
 function set_global_values() {
-
     # Set values used for calculations based upon current application state
 
     $state = get_state
@@ -131,14 +117,89 @@ function set_global_values() {
 }
 
 
-
 function verify_operands() {
-
-    # Verify that user hasn't entered illogical operands
+    # Verify that user hasn't entered illogical operands on the chalkboard
 
     if ($global:lower_limit -ge $global:upper_limit) {
         $global:lower_limit = ($global:upper_limit - 1)
     } elseif ($global:upper_limit -le $global:lower_limit) {
         $global:upper_limit = $global:lower_limit + 1
+    }
+}
+
+
+function get_color_mode() {
+    # Get current state from GUI whether dark mode is on or off
+
+    if ($dark_mode_checkbox.checked -eq $true) {
+        $mode = 'dark'
+    } elseif ($bright_mode_checkbox.checked -eq $true) {
+        $mode = 'bright'
+    }
+
+    return $mode
+}
+
+
+function set_background($mode) {
+    # If dark mode is enabled, change form background.
+
+    if ($mode -eq 'dark') {
+        $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_b.png")
+    } elseif ($mode -eq 'bright') {
+        $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_w.png")
+    }
+    
+    $form.backgroundimage = $bg_img
+    $form.backgroundimagelayout = 'center'
+    $form.width = ($bg_img.width + 15)
+    $form.height = ($bg_img.height + 10)
+}
+
+
+function set_color_mode($mode, $objects) {
+    <# Set all objects given as argument to the designated back and front color 
+    to accomodate for either bright or dark mode. #>
+
+    if ($mode -eq 'dark') {
+       
+        foreach ($object in $objects) {
+            $object.backcolor = '51,51,51'
+            $object.forecolor = 'white'
+        }
+   
+    } elseif ($mode -eq 'bright') {
+    
+        foreach ($object in $objects) {
+            $object.backcolor = 'white'
+            $object.forecolor = 'black'
+        }
+    }
+}
+
+
+function set_rounding() {
+    # Set rounding-mode from JSON on startup. (On or off)
+   
+    $rounding = load_data 'rounding' 'on' $json
+    if ($rounding -eq 1) {
+        $rounding_on_checkbox.checked = $true
+    } else {
+        $rounding_off_checkbox.checked = $true
+    }
+}
+
+
+function set_clipboard() {
+
+    try {
+        if ($rpane_list.items) {
+            set-clipboard $null
+            set-clipboard -value $rpane_list.items
+            set-clipboard -append ("`n`nTotalt: " + $net_sum_box.text)
+        } 
+    } catch {
+        write-host 'BUGS BUGS EVERYWHERE.'
+        write-host $error
     }
 }
