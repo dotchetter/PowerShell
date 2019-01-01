@@ -31,22 +31,20 @@ function add_cost() {
 
 
 function sum_btn() {
+    if ($lpane_list.items -ne $null) {
+        $gross_sum = 
+            compute_lpane_sum $lpane_list $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand 
 
-    $gross_sum = 
-        compute_lpane_sum $lpane_list $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand
-
-    $net_sum = 
-        compute_rpane_sum $gross_sum $labour $shipping
-    
-    # set gui values after function calls
-    $gross_sum_box.text = $gross_sum
-    $net_sum_box.text = $net_sum
-    $sum_button.enabled = $false
-    $add_cost.enabled = $false
-    $rpane_list.items.add("----------------------`n")
-    $rpane_list.items.add("Frakt: $shipping Kr")
-    $rpane_list.items.add("Arbete: $labour Kr")
-
+        $net_sum = 
+            compute_rpane_sum $gross_sum $labour $shipping
+        $gross_sum_box.text = $gross_sum
+        $net_sum_box.text = $net_sum
+        $sum_button.enabled = $false
+        $add_cost.enabled = $false
+        $rpane_list.items.add("----------------------`n")
+        $rpane_list.items.add("Frakt: $shipping Kr")
+        $rpane_list.items.add("Arbete: $labour Kr")
+    }
 }
 
 
