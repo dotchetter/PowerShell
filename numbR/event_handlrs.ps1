@@ -10,24 +10,29 @@ function add_cost() {
     math on each value.#>
 
     while ($input_box.text -match '^[0-9\;.,s]+$') {
+        
         $input_box.text = $input_box.text.replace(',','.')
         if ($input_box.text.contains(';')) {
+            
             foreach ($i in $input_box.text.split(';')) {
                 $lpane_list.items.add($i)
                 $calculated_cost = 
                     compute_rpane_member $i $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand
-                $rpane_list.items.add($calculated_cost)
+                $rpane_list.items.add("$calculated_cost SEK")
             }   
+
         } else {
+
             $lpane_list.items.add($input_box.text)
             $calculated_cost = 
                 compute_rpane_member $input_box.text $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand
-            $rpane_list.items.add($calculated_cost)
+            $rpane_list.items.add("$calculated_cost SEK")
         
         }
         
         $input_box.text = $null
     }
+
 }
 
 
@@ -48,10 +53,12 @@ function sum_btn() {
         $net_sum_box.text = $net_sum
         $sum_button.enabled = $false
         $add_cost.enabled = $false
-        $rpane_list.items.add("---------------------`n")
-        $rpane_list.items.add("Frakt: $shipping Kr")
-        $rpane_list.items.add("Arbete: $labour Kr")
+        $rpane_list.items.add("----------------------`n")
+        $rpane_list.items.add("Frakt: $shipping SEK")
+        $rpane_list.items.add("Arbete: $labour SEK")
+
     }
+
 }
 
 
@@ -63,11 +70,12 @@ function reset_app() {
     set_rpane_values
     $rpane_list.items.clear()
     $lpane_list.items.clear()
-    $net_sum_box.text = '0,00 Kr'
-    $gross_sum_box.text = '0,00 Kr'
+    $net_sum_box.text = '0,00 SEK'
+    $gross_sum_box.text = '0,00 SEK'
     $lpane_list.text = $null
     $sum_button.enabled = $true
     $add_cost.enabled = $true
+
 }
 
 
@@ -89,9 +97,13 @@ function save_data($json) {
     
 
     if ($color_mode -eq 'bright') {
+
         $json.darkmode = 0
+
     } else {
+
         $json.darkmode = 1
+
     }
 
     if ($rounding_on_checkbox.checked -eq $true) {$json.rounding = 1} else {$json.rounding = 0}
@@ -105,16 +117,33 @@ function save_data($json) {
 
 
 function set_clipboard() {
-    # Add contents from right pane listbox to clipboard.
+    <# Add contents from right pane listbox to clipboard, with added formatting and message phrases. 
+    Users can paste this content in web browser or elsewhere. #>
 
+    $phrase = "Hej, här kommer ditt kostnadsförslag. Vänligen återkom med ett beslut."
+    $farewell = "MVH Advania Service & Support"
     try {
+
         if ($rpane_list.items) {
-            set-clipboard $null
-            set-clipboard -value $rpane_list.items
-            set-clipboard -append ("`n`nTotalt: " + $net_sum_box.text)
+        
+            set-clipboard ($null + $phrase + "`n")
+            foreach ($i in $rpane_list.items) {
+                
+                foreach ($j in $i) {
+                
+                    if ($j -match '^[0-9]') {$j = "[KOMPONENTNAMN] $j"}
+                    set-clipboard -append $j
+                }
+            } 
+
+            set-clipboard -append ("`nTotalt: " + $net_sum_box.text)
+            set-clipboard -append "`n$farewell"
+            user_prompt 'Information' 'clipboard'
         }
-        user_prompt 'Information' 'clipboard'
+    
     } catch {
+    
         user_prompt 'Error' 'clipboard'
     }
+    
 }

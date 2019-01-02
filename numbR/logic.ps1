@@ -20,6 +20,7 @@ function get_state() {
 }
 
 
+
 function compute_lpane_sum($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
     <# Calculate the sum of left pane, which contains gross prices. Strings are 
     converted to integers and math performed on these operands. 
@@ -38,15 +39,16 @@ function compute_lpane_sum($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
         }
         $cost_sum += $num
     }
-    return "$cost_sum Kr"
+    return "$cost_sum SEK"
 }
+
 
 
 function compute_rpane_sum($num, $labour_cost, $ship_cost) {
     <# Calculate the sum of shipping with labour added to the total sum
     of costs in right pane.  #>
 
-    $num = $num.trim('Kr')
+    $num = $num.trim('SEK')
     $num = (0 + $num)
     $rpane_sum = ($num + $labour_cost + $ship_cost)
     
@@ -56,8 +58,9 @@ function compute_rpane_sum($num, $labour_cost, $ship_cost) {
 
     }
 
-    return "$rpane_sum Kr "
+    return "$rpane_sum SEK "
 }
+
 
 
 function compute_rpane_member($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
@@ -78,6 +81,7 @@ function compute_rpane_member($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
 }
 
 
+
 function set_rpane_values() {
     # set values in right pane boxes from global variables
 
@@ -90,6 +94,7 @@ function set_rpane_values() {
 }
 
 
+
 function load_data($state, $value, $json) {
     <# Load attribute data from JSON containing multiplicands, 
     shipping cost and labour cost generated from GUI by the user. 
@@ -100,6 +105,7 @@ function load_data($state, $value, $json) {
    
     return $key_value
 }
+
 
 
 function create_json($install_path) {
@@ -147,6 +153,7 @@ function hide_console() {
 }
 
 
+
 function set_global_values() {
     # Set values used for calculations based upon current application state
     try {
@@ -166,6 +173,7 @@ function set_global_values() {
 }
 
 
+
 function verify_operands() {
     # Verify that user hasn't entered illogical operands on the chalkboard
 
@@ -178,6 +186,7 @@ function verify_operands() {
         $global:upper_limit = $global:lower_limit + 1
     }
 }
+
 
 
 function get_color_mode() {
@@ -194,6 +203,7 @@ function get_color_mode() {
 
     return $mode
 }
+
 
 
 function set_background($mode) {
@@ -213,6 +223,7 @@ function set_background($mode) {
     $form.width = ($bg_img.width + 15)
     $form.height = ($bg_img.height + 10)
 }
+
 
 
 function set_color_mode($mode, $objects) {
@@ -248,7 +259,7 @@ function user_prompt($type, $trigger) {
 
         switch ($trigger) {
 
-        'clipboard' {$msg_body = 'Uträknikngen kopierad!'}
+        'clipboard' {$msg_body = 'Kostnadsförslaget är kopierat'}
 
         'save' {$msg_body = 'Variabler har sparats för aktuellt appläge.'}
 
@@ -258,16 +269,16 @@ function user_prompt($type, $trigger) {
 
         switch  ($trigger) {
 
-        'clipboard' {$msg_body = 'Åh nej! Något gick fel under kopieringen.' + $error}
+        'clipboard' {$msg_body = 'Åh nej! Något gick fel under kopieringen. Detta vet vi:' + "`n`n$error"}
 
-        'save' {$msg_body = 'Oh noes! Något gick snett när NumbR skulle spara variablerna till JSON.' + $error}
+        'save' {$msg_body = 'Oh noes! Något gick snett när NumbR skulle spara variablerna till JSON. Detta vet vi:' + "`n`n$error"}
 
-        'set globals' {$msg_body = 'Aj aj.. NumbR kunde inte läsa in din data för griffeltavlan.' + $error}
+        'set globals' {$msg_body = 'Aj aj.. NumbR kunde inte läsa in din data för griffeltavlan. Detta vet vi:' + "`n`n$error"}
 
         }
     }
 
     [windows.forms.messagebox]::show("$msg_body", "$type", 
     [windows.forms.messageboxbuttons]::Ok, [windows.forms.messageboxicon]::$type)
-
+    $error.clear()
 }
