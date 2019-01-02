@@ -23,7 +23,9 @@ function add_cost() {
             $calculated_cost = 
                 compute_rpane_member $input_box.text $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand
             $rpane_list.items.add($calculated_cost)
+        
         }
+        
         $input_box.text = $null
     }
 }
@@ -31,17 +33,22 @@ function add_cost() {
 
 
 function sum_btn() {
+   # Calculate sum button clicked. Sum all objects in left pane, calculate net sum.
+   # Calculate right pane sum with shipping and labour added.
+
     if ($lpane_list.items -ne $null) {
+
         $gross_sum = 
             compute_lpane_sum $lpane_list $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand 
 
         $net_sum = 
             compute_rpane_sum $gross_sum $labour $shipping
+
         $gross_sum_box.text = $gross_sum
         $net_sum_box.text = $net_sum
         $sum_button.enabled = $false
         $add_cost.enabled = $false
-        $rpane_list.items.add("----------------------`n")
+        $rpane_list.items.add("---------------------`n")
         $rpane_list.items.add("Frakt: $shipping Kr")
         $rpane_list.items.add("Arbete: $labour Kr")
     }
@@ -80,23 +87,34 @@ function save_data($json) {
     $json.$state.upper_multiplicand = $upper_multiplicand_box.text
     $json.$state.lower_multiplicand = $lower_multiplicand_box.text
     
+
     if ($color_mode -eq 'bright') {
         $json.darkmode = 0
     } else {
         $json.darkmode = 1
     }
 
-    if ($rounding_on_checkbox.checked -eq $true) {
-        $json.rounding = 1
-    } else {
-        $json.rounding = 0
-    }
-
-    $json | convertto-json | out-file "$env:userprofile\git\powershell\NumbR\data.json"
+    if ($rounding_on_checkbox.checked -eq $true) {$json.rounding = 1} else {$json.rounding = 0}
+       
+    $json | convertto-json | out-file "$env:userprofile\git\powershell\NumbR\data.json" 
     
-    [windows.forms.messagebox]::show("Inställningar för $state har sparats.", "", 
-    [windows.forms.messageboxbuttons]::Ok, [windows.forms.messageboxicon]::information)
-    
+    user_prompt 'Information' 'save'
     reset_app
+}
 
+
+
+function set_clipboard() {
+    # Add contents from right pane listbox to clipboard.
+
+    try {
+        if ($rpane_list.items) {
+            set-clipboard $null
+            set-clipboard -value $rpane_list.items
+            set-clipboard -append ("`n`nTotalt: " + $net_sum_box.text)
+        }
+        user_prompt 'Information' 'clipboard'
+    } catch {
+        user_prompt 'Error' 'clipboard'
+    }
 }

@@ -9,8 +9,11 @@ function get_state() {
     are loaded from json. Otherwise, PC variables are loaded. #>
 
     if ($state_checkbox_mac.checked -eq $true) {
+
         $state = 'mac'
+
     } elseif ($state_checkbox_pc.checked -eq $true) {
+
         $state = 'pc'
     }
     return $state
@@ -23,10 +26,14 @@ function compute_lpane_sum($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
     Sum returned to be displayed in $gross_sum_box #>
 
     foreach ($num in $cost.items) {
+
         $num = (0 + $num)
         if ($num -le $low_lim) {
+
             $num = ($num * $low_mult)
+        
         } elseif ($num -ge $upp_lim) {
+
             $num = ($num * $upp_mult)
         }
         $cost_sum += $num
@@ -44,7 +51,9 @@ function compute_rpane_sum($num, $labour_cost, $ship_cost) {
     $rpane_sum = ($num + $labour_cost + $ship_cost)
     
     if ($rounding_on_checkbox.checked -eq $true) {
+
         $rpane_sum = ([math]::round($rpane_sum, 0))
+
     }
 
     return "$rpane_sum Kr "
@@ -56,9 +65,13 @@ function compute_rpane_member($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
     in the right pane. #>
     
     $cost = (0 + $cost)
-    if ($cost -le $low_lim) {    
+
+    if ($cost -le $low_lim) {
+
         $cost = $cost * $low_mult    
-    } elseif ($cost -ge $upp_lim) {    
+    
+    } elseif ($cost -ge $upp_lim) { 
+
         $cost = $cost * $upp_mult
     }
     return $cost
@@ -89,6 +102,43 @@ function load_data($state, $value, $json) {
 }
 
 
+function create_json($install_path) {
+    # Initiate a new JSON file if none is present in install directory
+
+    $json = @{
+
+        'mac' = @{
+
+            lower_limit = '499'
+            upper_limit = '500'
+            shipping = '250'
+            labour = '975'
+            upper_multiplicand = '1.2'
+            lower_multiplicand = '1.4'
+
+        }
+
+        'pc' = @{
+
+            lower_limit = '499'
+            upper_limit = '500'
+            shipping = '200'
+            labour = '800'
+            upper_multiplicand = '1.2'
+            lower_multiplicand = '1.4'
+            
+        }
+
+        darkmode = '1'
+        laststate = 'mac'
+        rounding = '1'
+    }
+
+    $json | convertto-json | out-file "$install_path\data.json"
+}
+
+
+
 function hide_console() {
     # Hide PS console window during runtime
 
@@ -99,15 +149,19 @@ function hide_console() {
 
 function set_global_values() {
     # Set values used for calculations based upon current application state
-
-    $state = get_state
-    $global:labour = load_data $state 'labour' $json
-    $global:shipping = load_data $state 'shipping' $json
-    $global:upper_limit = load_data $state 'upper_limit' $json
-    $global:lower_limit = load_data $state 'lower_limit' $json
-    $global:upper_multiplicand = load_data $state 'upper_multiplicand' $json
-    $global:lower_multiplicand = load_data $state 'lower_multiplicand' $json
-
+    try {
+    
+        $state = get_state
+        $global:labour = load_data $state 'labour' $json
+        $global:shipping = load_data $state 'shipping' $json
+        $global:upper_limit = load_data $state 'upper_limit' $json
+        $global:lower_limit = load_data $state 'lower_limit' $json
+        $global:upper_multiplicand = load_data $state 'upper_multiplicand' $json
+        $global:lower_multiplicand = load_data $state 'lower_multiplicand' $json
+    
+    } catch {
+        user_prompt 'Error' 'set globals'
+    }
     verify_operands
 }
 
@@ -116,8 +170,11 @@ function verify_operands() {
     # Verify that user hasn't entered illogical operands on the chalkboard
 
     if ($global:lower_limit -ge $global:upper_limit) {
+
         $global:lower_limit = ($global:upper_limit - 1)
+
     } elseif ($global:upper_limit -le $global:lower_limit) {
+
         $global:upper_limit = $global:lower_limit + 1
     }
 }
@@ -127,8 +184,11 @@ function get_color_mode() {
     # Get current state from GUI whether dark mode is on or off
 
     if ($dark_mode_checkbox.checked -eq $true) {
+
         $mode = 'dark'
+
     } elseif ($bright_mode_checkbox.checked -eq $true) {
+
         $mode = 'bright'
     }
 
@@ -139,11 +199,14 @@ function get_color_mode() {
 function set_background($mode) {
     # If dark mode is enabled, change form background.
 
-        if ($mode -eq 'dark') {
-            $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_b.png")
-        } elseif ($mode -eq 'bright') {
-            $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_w.png")
-        }
+    if ($mode -eq 'dark') {
+
+        $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_b.png")
+
+    } elseif ($mode -eq 'bright') {
+
+        $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_w.png")
+    }
     
     $form.backgroundimage = $bg_img
     $form.backgroundimagelayout = 'center'
@@ -157,15 +220,17 @@ function set_color_mode($mode, $objects) {
     to accomodate for either bright or dark mode. #>
 
     if ($mode -eq 'dark') {
-       
+
         foreach ($object in $objects) {
+
             $object.backcolor = '51,51,51'
             $object.forecolor = 'white'
         }
-   
+
     } elseif ($mode -eq 'bright') {
-    
+
         foreach ($object in $objects) {
+
             $object.backcolor = 'white'
             $object.forecolor = 'black'
         }
@@ -173,18 +238,36 @@ function set_color_mode($mode, $objects) {
 }
 
 
-function set_clipboard() {
-    # Add contents from right pane listbox to clipboard.
 
-    try {
-        if ($rpane_list.items) {
-            set-clipboard $null
-            set-clipboard -value $rpane_list.items
-            set-clipboard -append ("`n`nTotalt: " + $net_sum_box.text)
-        } 
-    } catch {
-        write-host 'BUGS BUGS EVERYWHERE.'
-        write-host $error
+function user_prompt($type, $trigger) {
+    <# Handle errors or information and prompt user with messagebox.
+    Type refers to Error or information prompt to show. Trigger is which app function that
+    asks for a prompt box. #>
+
+    if ($type -eq 'Information') {
+
+        switch ($trigger) {
+
+        'clipboard' {$msg_body = 'Uträknikngen kopierad!'}
+
+        'save' {$msg_body = 'Variabler har sparats för aktuellt appläge.'}
+
+        }
+
+    } elseif ($type -eq 'Error') {
+
+        switch  ($trigger) {
+
+        'clipboard' {$msg_body = 'Åh nej! Något gick fel under kopieringen.' + $error}
+
+        'save' {$msg_body = 'Oh noes! Något gick snett när NumbR skulle spara variablerna till JSON.' + $error}
+
+        'set globals' {$msg_body = 'Aj aj.. NumbR kunde inte läsa in din data för griffeltavlan.' + $error}
+
+        }
     }
-}
 
+    [windows.forms.messagebox]::show("$msg_body", "$type", 
+    [windows.forms.messageboxbuttons]::Ok, [windows.forms.messageboxicon]::$type)
+
+}

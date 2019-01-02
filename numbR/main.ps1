@@ -18,7 +18,6 @@ $install_path = "$env:userprofile\git\powershell\NumbR"
 $icon = "$install_path\meta\numbr.ico"
 
 
-
 # Import modules
 . ($psscriptroot + "\lp_gui.ps1")
 . ($psscriptroot + "\rp_gui.ps1")
@@ -27,8 +26,16 @@ $icon = "$install_path\meta\numbr.ico"
 . ($psscriptroot + "\event_handlrs.ps1")
 
 
-
 # Initialize variables
+
+$json = test-path "$env:userprofile\git\powershell\NumbR\data.json"
+
+if (-not $json) {
+
+    create_json $install_path
+
+}
+
 $json = get-content "$env:userprofile\git\powershell\NumbR\data.json" | convertfrom-json
 
 $global_vars = @(
@@ -41,6 +48,7 @@ $global_vars = @(
     $global:lower_multiplicand
 )
 
+
 $dark_mode_shifters = @(
     
     $darkmode_panel, $state_panel, $net_sum_box, 
@@ -51,12 +59,14 @@ $dark_mode_shifters = @(
 )
 
 
-
 # Load color mode, app state and rounding state from JSON
 if ($json.darkmode -eq 0) {
+
     $color_mode = 'bright'
     $bright_mode_checkbox.checked = $true
+
 } else {
+
     $color_mode = 'dark'
     $dark_mode_checkbox.checked = $true
 }
@@ -64,16 +74,22 @@ if ($json.darkmode -eq 0) {
 
 # Load last state from JSON
 if ($json.laststate -eq 'pc') {
+
     $state_checkbox_pc.checked = $true
+
 } else {
+
     $state_checkbox_mac.checked = $true
 }
 
 
 # Load rounding state from JSON
 if ($json.rounding -eq 1) {
+
     $rounding_on_checkbox.checked = $true
+
 } else {
+
     $rounding_off_checkbox.checked = $true
 }
 
@@ -87,10 +103,11 @@ set_color_mode $color_mode $dark_mode_shifters
 set_background $color_mode
 
 
-
 # Convert values from string to Int32
 foreach ($i in $global_vars) {
+
     $i = (0 + $i)
+
 }
 
 
