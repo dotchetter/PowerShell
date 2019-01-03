@@ -26,6 +26,8 @@ $save_data_button_click = {save_data $json}
 Button(s) clicked: '$state_checkbox_mac' and '$state_checkbox_pc'. #>  
 $state_checkbox_mac.add_click({reset_app})
 $state_checkbox_pc.add_click({reset_app})
+$state_checkbox_ipad.add_click({reset_app})
+
 $dark_mode_checkbox.add_click({
 
     $color_mode = get_color_mode
@@ -36,7 +38,6 @@ $dark_mode_checkbox.add_click({
 
 })
 
-
 $bright_mode_checkbox.add_click({
 
     $color_mode = get_color_mode
@@ -44,7 +45,6 @@ $bright_mode_checkbox.add_click({
     set_background $color_mode
 
 })
-
 
 # Add functionality for all buttons on gui
 $add_cost.add_click({add_cost})

@@ -8,15 +8,24 @@ function get_state() {
     the radio button. If Mac is selected, all variables for Mac repair
     are loaded from json. Otherwise, PC variables are loaded. #>
 
-    if ($state_checkbox_mac.checked -eq $true) {
+    switch ($state_checkbox_mac.checked) {
 
-        $state = 'mac'
+        $true {$state = 'mac'}
+        $false {
 
-    } elseif ($state_checkbox_pc.checked -eq $true) {
+            if ($state_checkbox_pc.checked -eq $true) {
 
-        $state = 'pc'
+                $state = 'pc'
+
+            } else {
+
+                $state = 'ipad'
+            }
+        }
     }
+
     return $state
+
 }
 
 
@@ -29,17 +38,24 @@ function compute_lpane_sum($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
     foreach ($num in $cost.items) {
 
         $num = (0 + $num)
-        if ($num -le $low_lim) {
+        switch ($num) {
 
-            $num = ($num * $low_mult)
-        
-        } elseif ($num -ge $upp_lim) {
+            {$_ -le $low_lim} {
+                $_ = ($_ * $low_mult)
+                $cost_sum += $_
+            }
 
-            $num = ($num * $upp_mult)
+            {$_ -ge $upp_lim} {
+                $_ = ($_ * $upp_mult)
+                $cost_sum += $_
+            }
+
         }
-        $cost_sum += $num
+
     }
+
     return "$cost_sum SEK"
+
 }
 
 
@@ -69,15 +85,15 @@ function compute_rpane_member($cost, $low_lim, $upp_lim, $low_mult, $upp_mult) {
     
     $cost = (0 + $cost)
 
-    if ($cost -le $low_lim) {
+    switch ($cost) {
 
-        $cost = $cost * $low_mult    
-    
-    } elseif ($cost -ge $upp_lim) { 
+        {$_ -le $low_lim} {$cost = $cost * $low_mult}
+        {$_ -ge $upp_lim} {$cost = $cost * $upp_mult}
 
-        $cost = $cost * $upp_mult
     }
+
     return $cost
+
 }
 
 
@@ -113,12 +129,16 @@ function create_json($install_path) {
 
     $json = @{
 
+        darkmode = '1'
+        laststate = 'mac'
+        rounding = '1'
+
         'mac' = @{
 
             lower_limit = '499'
             upper_limit = '500'
-            shipping = '250'
-            labour = '975'
+            shipping = '200'
+            labour = '900'
             upper_multiplicand = '1.2'
             lower_multiplicand = '1.4'
 
@@ -135,21 +155,30 @@ function create_json($install_path) {
             
         }
 
-        darkmode = '1'
-        laststate = 'mac'
-        rounding = '1'
+        'ipad' = @{
+
+            lower_limit = '0'
+            upper_limit = '2000'
+            shipping = '200'
+            labour = '0'
+            upper_multiplicand = '1.05'
+            lower_multiplicand = '0'
+
+        }
+
     }
 
     $json | convertto-json | out-file "$install_path\data.json"
+
 }
 
 
 
 function hide_console() {
-    # Hide PS console window during runtime
-
+    # Hide PS console window during runtime. 0 = hide
     $console_window = [console.window]::getconsolewindow()
-    [console.window]::showwindow($console_window, 0) #0 = hide
+    [console.window]::showwindow($console_window, 0) 
+
 }
 
 
@@ -167,9 +196,13 @@ function set_global_values() {
         $global:lower_multiplicand = load_data $state 'lower_multiplicand' $json
     
     } catch {
+
         user_prompt 'Error' 'set globals'
+
     }
+
     verify_operands
+
 }
 
 
@@ -184,7 +217,9 @@ function verify_operands() {
     } elseif ($global:upper_limit -le $global:lower_limit) {
 
         $global:upper_limit = $global:lower_limit + 1
+
     }
+
 }
 
 
@@ -192,16 +227,16 @@ function verify_operands() {
 function get_color_mode() {
     # Get current state from GUI whether dark mode is on or off
 
-    if ($dark_mode_checkbox.checked -eq $true) {
+    switch ($dark_mode_checkbox.checked) {
 
-        $mode = 'dark'
+        $true {$mode = 'dark'}
 
-    } elseif ($bright_mode_checkbox.checked -eq $true) {
+        $false {$mode = 'bright'}
 
-        $mode = 'bright'
     }
 
     return $mode
+
 }
 
 
@@ -216,6 +251,7 @@ function set_background($mode) {
     } elseif ($mode -eq 'bright') {
 
         $bg_img = [system.drawing.image]::fromfile("$install_path\meta\bg_w.png")
+
     }
     
     $form.backgroundimage = $bg_img
@@ -244,8 +280,11 @@ function set_color_mode($mode, $objects) {
 
             $object.backcolor = 'white'
             $object.forecolor = 'black'
+
         }
+
     }
+
 }
 
 
@@ -259,9 +298,9 @@ function user_prompt($type, $trigger) {
 
         switch ($trigger) {
 
-        'clipboard' {$msg_body = 'Kostnadsförslaget är kopierat'}
-
+        'clipboard' {$msg_body = 'Klart! Klistra in för att få fram ditt kostnadsförslag.'}
         'save' {$msg_body = 'Variabler har sparats för aktuellt appläge.'}
+        'add cost' {$msg_body = 'Ogiltiga tecken, kontrollera inmatning.'}
 
         }
 
@@ -269,16 +308,17 @@ function user_prompt($type, $trigger) {
 
         switch  ($trigger) {
 
-        'clipboard' {$msg_body = 'Åh nej! Något gick fel under kopieringen. Detta vet vi:' + "`n`n$error"}
-
-        'save' {$msg_body = 'Oh noes! Något gick snett när NumbR skulle spara variablerna till JSON. Detta vet vi:' + "`n`n$error"}
-
-        'set globals' {$msg_body = 'Aj aj.. NumbR kunde inte läsa in din data för griffeltavlan. Detta vet vi:' + "`n`n$error"}
+        'clipboard' {$msg_body = 'Aw snap! Något gick fel under kopieringen. Detta vet vi:' + "`n`n$error"}
+        'save' {$msg_body = 'Aw snap! Något gick snett när NumbR skulle spara data. Detta vet vi:' + "`n`n$error"}
+        'set globals' {$msg_body = 'Aw snap! NumbR kunde inte läsa in data. Detta vet vi:' + "`n`n$error"}
+        'save input error' {$msg_body = 'Här kan du endast ange siffror. Decimaltal skrivs med punkt.'}
 
         }
+
     }
 
     [windows.forms.messagebox]::show("$msg_body", "$type", 
     [windows.forms.messageboxbuttons]::Ok, [windows.forms.messageboxicon]::$type)
     $error.clear()
+
 }

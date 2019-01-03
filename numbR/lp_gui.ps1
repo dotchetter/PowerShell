@@ -15,7 +15,7 @@ $form.formborderstyle = 'fixedsingle'
 $form.maximizebox = $false
 
 
-# input price box
+# Input price box
 $input_box = new-object system.windows.forms.textbox
 $input_box.autosize = $true
 $input_box.top = 145
@@ -23,16 +23,18 @@ $input_box.left = 85
 $input_box.width = 300
 
 
-# 'add cost' button
+# 'Add cost' button
 $add_cost = new-object system.windows.forms.button
 $add_cost.top = 180
 $add_cost.left = 85
 $add_cost.width = 300
 $add_cost.height = 30
 $add_cost.text = 'Lägg till'
+$add_cost.flatstyle = "flat"
+$add_cost.flatappearance.bordersize = 0
 
 
-# left pane incremental list with costs
+# Left pane incremental list with costs
 $lpane_list = new-object system.windows.forms.listbox
 $lpane_list.top = 300
 $lpane_list.left = 86
@@ -41,22 +43,13 @@ $lpane_list.height = 300
 $lpane_list.selectionmode = "multiextended"
 
 
-# right pane incremental list with calculated costs
+# Right pane incremental list with calculated costs
 $rpane_list = new-object system.windows.forms.listbox
 $rpane_list.top = 300
 $rpane_list.left = 243
 $rpane_list.width = 140
 $rpane_list.height = 300
 $rpane_list.selectionmode = "multiextended"
-
-
-# calculate button
-$sum_button = new-object system.windows.forms.button
-$sum_button.top = 215
-$sum_button.left = 85
-$sum_button.width = 300
-$sum_button.text = 'Beräkna'
-$sum_button.height = 30
 
 
 # Left side sum box, multiplied but not increased with freight or shipping
@@ -83,26 +76,40 @@ $net_sum_box.readonly = $true
 $net_sum_box.text = '0.00 Kr'
 
 
-# reset application button
+# Reset application button
 $reset = new-object system.windows.forms.button
-$reset.top = 625
+$reset.top = 215
 $reset.left = 85
 $reset.width = 300
 $reset.height = 30
 $reset.text = 'Nollställ'
+$reset.flatstyle = "flat"
+$reset.flatappearance.bordersize = 0
+
+
+# Calculate button
+$sum_button = new-object system.windows.forms.button
+$sum_button.top = 590
+$sum_button.left = 85
+$sum_button.width = 300
+$sum_button.text = 'Beräkna'
+$sum_button.height = 30
+$sum_button.flatstyle = "Flat" 
+$sum_button.flatappearance.bordersize = 0
 
 
 # Copy right side listbox to clipboard button
 $clipboard_button = new-object system.windows.forms.button
-$clipboard_button.top = 590
+$clipboard_button.top = 625
 $clipboard_button.left = 85
 $clipboard_button.width = 300
 $clipboard_button.height = 30
 $clipboard_button.text = 'Kopiera till urklipp'
+$clipboard_button.flatstyle = "flat"
+$clipboard_button.flatappearance.bordersize = 0
 
 
 # -- render objects
-
 $form.controls.addrange(@(
 
     $input_box,
@@ -114,5 +121,6 @@ $form.controls.addrange(@(
     $sum_button,
     $net_sum_box,
     $clipboard_button
+  
     )
 )

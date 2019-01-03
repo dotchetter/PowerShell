@@ -6,7 +6,7 @@
 <# Input value to calculate from if cost is greater than or equal to
 assigned value by user. Saved to JSON object. #>
 $upper_limit_box = new-object system.windows.forms.textbox
-$upper_limit_box.top = 219
+$upper_limit_box.top = 215
 $upper_limit_box.left = 610
 $upper_limit_box.width = 40
 
@@ -14,14 +14,14 @@ $upper_limit_box.width = 40
 <# Input value to calculate from if cost is less than or equal to
  assigned value by user. Saved to JSON object.  #>
 $lower_limit_box = new-object system.windows.forms.textbox
-$lower_limit_box.top = 282
+$lower_limit_box.top = 280
 $lower_limit_box.left = 610
 $lower_limit_box.width = 40
 
 
 # Input value to set as multiplicand if cost is 'greater than'
 $upper_multiplicand_box = new-object system.windows.forms.textbox
-$upper_multiplicand_box.top = 219
+$upper_multiplicand_box.top = 215
 $upper_multiplicand_box.left = 790
 $upper_multiplicand_box.width = 40
 
@@ -50,9 +50,17 @@ $labour_box.width = 40
 # Group panel for application state radio buttons
 $state_panel = new-object system.windows.forms.panel
 $state_panel.location = '545, 630'
-$state_panel.size = '50, 50'
+$state_panel.size = '50, 150'
 $state_panel.backcolor = 'white'
 $state_panel.visible = $true
+
+
+# State radiobutton (pc)
+$state_checkbox_pc = new-object system.windows.forms.radiobutton
+$state_checkbox_pc.size = '50, 20'
+$state_checkbox_pc.text = "PC"
+$state_checkbox_pc.top = 5
+$state_checkbox_pc.left = 0
 
 
 # State radiobutton (mac)
@@ -63,12 +71,12 @@ $state_checkbox_mac.top = 30
 $state_checkbox_mac.left = 0
 
 
-# State radiobutton (pc)
-$state_checkbox_pc = new-object system.windows.forms.radiobutton
-$state_checkbox_pc.size = '50, 20'
-$state_checkbox_pc.text = "PC"
-$state_checkbox_pc.top = 5
-$state_checkbox_pc.left = 0
+# State radiobutton (iPad)
+$state_checkbox_ipad = new-object system.windows.forms.radiobutton
+$state_checkbox_ipad.size = '80, 20'
+$state_checkbox_ipad.text = 'iPad'
+$state_checkbox_ipad.top = 55
+$state_checkbox_ipad.left = 0
 
 
 # Group panel for color mode radio buttons
@@ -126,10 +134,12 @@ $rounding_off_checkbox.left = 0
 # Save data buttons
 $save_data_button = new-object system.windows.forms.button
 $save_data_button.top = 430
-$save_data_button.left = 620
+$save_data_button.left = 618
 $save_data_button.width = 300
 $save_data_button.height = 30
 $save_data_button.text = 'Spara'
+$save_data_button.flatstyle = 'flat'
+$save_data_button.flatappearance.bordersize = 0
 
 
 # Render objects
@@ -150,6 +160,6 @@ $form.controls.addrange(@(
 
 
 # Add radio buttons to corresponding groupbox
-$state_panel.controls.addrange(@($state_checkbox_pc, $state_checkbox_mac))
+$state_panel.controls.addrange(@($state_checkbox_pc, $state_checkbox_mac, $state_checkbox_ipad))
 $darkmode_panel.controls.addrange(@($dark_mode_checkbox, $bright_mode_checkbox))
 $rounding_panel.controls.addrange(@($rounding_on_checkbox, $rounding_off_checkbox))

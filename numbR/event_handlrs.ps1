@@ -7,9 +7,14 @@
 function add_cost() {
 <#  Handle button clicked where user wants to add costs to calculation.
     Parse textbox text for ';' and separate numbers. Call functions to perform
-    math on each value.#>
+    math on each value. #>
 
-    while ($input_box.text -match '^[0-9\;.,s]+$') {
+    # Warn user that entered characters are not allowed in input box
+    if ($input_box.text -notmatch '^[0-9\;.,s]+$' ) {
+
+        user_prompt 'Information' 'add cost'
+
+    } else {
         
         $input_box.text = $input_box.text.replace(',','.')
         if ($input_box.text.contains(';')) {
@@ -28,8 +33,8 @@ function add_cost() {
                 compute_rpane_member $input_box.text $lower_limit $upper_limit $lower_multiplicand $upper_multiplicand
             $rpane_list.items.add("$calculated_cost SEK")
         
-        }
-        
+        }      
+
         $input_box.text = $null
     }
 
@@ -53,7 +58,7 @@ function sum_btn() {
         $net_sum_box.text = $net_sum
         $sum_button.enabled = $false
         $add_cost.enabled = $false
-        $rpane_list.items.add("----------------------`n")
+        $rpane_list.items.add("------------------------`n")
         $rpane_list.items.add("Frakt: $shipping SEK")
         $rpane_list.items.add("Arbete: $labour SEK")
 
@@ -84,34 +89,69 @@ function save_data($json) {
     <# Read data from input boxes in right gui pane, renderd on chalkboard
     and save values to JSON file. #>
 
+    $valid_input = $true
     $state = get_state
     $color_mode = get_color_mode
+    $all_rpane_fields = @(
 
-    $json.laststate = $state
-    $json.$state.labour = $labour_box.text
-    $json.$state.shipping = $ship_cost_box.text
-    $json.$state.upper_limit = $upper_limit_box.text
-    $json.$state.lower_limit = $lower_limit_box.text
-    $json.$state.upper_multiplicand = $upper_multiplicand_box.text
-    $json.$state.lower_multiplicand = $lower_multiplicand_box.text
+        $labour_box, $ship_cost_box, 
+        $upper_limit_box, $lower_limit_box, 
+        $upper_multiplicand_box, $lower_multiplicand_box
     
+    )
+        
+    switch ($color_mode) {      
 
-    if ($color_mode -eq 'bright') {
+        'bright' {$json.darkmode = 0}       
+        'dark' {$json.darkmode = 1}
 
-        $json.darkmode = 0
+    }   
 
-    } else {
+    switch ($rounding_on_checkbox.checked) {    
 
-        $json.darkmode = 1
+        $true {$json.rounding = 1}  
+        $false {$json.rounding = 0} 
 
     }
+      
+    # Verify that ',' is not delimiting integers in the boxes. Replace with '.'
+    foreach ($value in $all_rpane_fields) { 
 
-    if ($rounding_on_checkbox.checked -eq $true) {$json.rounding = 1} else {$json.rounding = 0}
-       
-    $json | convertto-json | out-file "$env:userprofile\git\powershell\NumbR\data.json" 
+        if ($value.text -notmatch '^[0-9.]*$') {   
+
+            $valid_input = $false   
+            user_prompt 'Error' 'save input error'
+
+        }             
+
+    }
     
-    user_prompt 'Information' 'save'
-    reset_app
+    try {
+    
+        # Save object to JSON file, alert user and reset app to parse JSON file again
+        if ($valid_input -eq $true) {
+
+            $json.laststate = $state
+            $json.$state.labour = $labour_box.text
+            $json.$state.shipping = $ship_cost_box.text
+            $json.$state.upper_limit = $upper_limit_box.text
+            $json.$state.lower_limit = $lower_limit_box.text
+            $json.$state.upper_multiplicand = $upper_multiplicand_box.text
+            $json.$state.lower_multiplicand = $lower_multiplicand_box.text
+            $json | convertto-json | out-file "$install_path\data.json"
+            user_prompt 'Information' 'save'
+        } 
+
+    } catch {
+
+        user_prompt 'Error' 'save'
+        
+    } finally {
+    
+        reset_app
+    
+    }
+
 }
 
 
@@ -134,6 +174,7 @@ function set_clipboard() {
                     if ($j -match '^[0-9]') {$j = "[KOMPONENTNAMN] $j"}
                     set-clipboard -append $j
                 }
+
             } 
 
             set-clipboard -append ("`nTotalt: " + $net_sum_box.text)
@@ -145,5 +186,5 @@ function set_clipboard() {
     
         user_prompt 'Error' 'clipboard'
     }
-    
+
 }

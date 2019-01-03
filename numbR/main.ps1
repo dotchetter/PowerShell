@@ -28,7 +28,7 @@ $icon = "$install_path\meta\numbr.ico"
 
 # Initialize variables
 
-$json = test-path "$env:userprofile\git\powershell\NumbR\data.json"
+$json = test-path "$install_path\data.json"
 
 if (-not $json) {
 
@@ -36,7 +36,7 @@ if (-not $json) {
 
 }
 
-$json = get-content "$env:userprofile\git\powershell\NumbR\data.json" | convertfrom-json
+$json = get-content "$install_path\data.json" | convertfrom-json
 
 $global_vars = @(
     
@@ -46,6 +46,7 @@ $global_vars = @(
     $global:lower_limit,
     $global:upper_multiplicand,
     $global:lower_multiplicand
+    
 )
 
 
