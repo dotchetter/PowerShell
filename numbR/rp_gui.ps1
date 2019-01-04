@@ -2,6 +2,13 @@
 # Module file for application "NumbR"
 # Module purpose: Right pane GUI objects
 
+# Drop down menu for selecting customers
+$customer_menu = new-object system.windows.forms.combobox
+$customer_menu.top = 145
+$customer_menu.left = 833
+$customer_menu.width = 140
+$customer_menu.flatstyle = "flat"
+
 
 <# Input value to calculate from if cost is greater than or equal to
 assigned value by user. Saved to JSON object. #>
@@ -144,7 +151,7 @@ $save_data_button.flatappearance.bordersize = 0
 
 # Render objects
 $form.controls.addrange(@(
-
+    $customer_menu,
     $rounding_panel, 
     $darkmode_panel,
     $state_panel, 

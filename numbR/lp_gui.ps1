@@ -82,7 +82,7 @@ $reset.top = 215
 $reset.left = 85
 $reset.width = 300
 $reset.height = 30
-$reset.text = 'Nollställ'
+$reset.text = 'Töm'
 $reset.flatstyle = "flat"
 $reset.flatappearance.bordersize = 0
 
