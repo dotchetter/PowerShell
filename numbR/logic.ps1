@@ -56,22 +56,39 @@ function compute_rpane_sum($num, $labour_cost, $ship_cost) {
 }
 
 
+function get_current_customer() {
+    <# Return the current name of customer selected in customer_menu
+    in string format. Used to know which JSON to read, and save to. #>
+    $current_customer = $customer_menu.selecteditem.tostring() + ".json"
+    return $current_customer
+}
+
+
 function populate_customer_list($install_path) {
-    # Parse directory for JSON config files. 
-    # Return output to $customer_menu list.
-    foreach ($i in (get-childitem "$install_path\*.json" | select $_.name -expandproperty basename)) {
-        $customer_menu.Items.Add($i.tostring())
+    <# Parse install directory for JSON config files. 
+    Return output to $customer_menu list. If none is present,
+    call create_json for default values. #>
+    $json = test-path "$install_path\*.json"
+    if (-not $json) {
+        create_json $install_path
+    }
+
+    <# Get all JSON files in install directory and 
+    add them in name format to the customer list #>
+    
+    foreach ($i in (get-childitem "$install_path\*.json" | 
+        select $_.name -expandproperty basename)) {
+            $customer_menu.items.add($i.tostring())
     }
     $customer_menu.selecteditem = $customer_menu.items[0]
 }
 
 
-function load_json($install_path) {
-    # load correct JSON object depending on output from populate_customers()
-    $json_name = $customer_menu.selecteditem.tostring() + ".json"
-    
+function get_json($install_path, $name) {
+    # load correct JSON object depending on selected customer in menu.
+    $customer = get_current_customer
     try {
-        $json = get-content "$install_path\$json_name" | convertfrom-json
+        $json = get-content "$install_path\$name" | convertfrom-json
     } catch {
         user_prompt 'Error' 'Load'
     }
@@ -112,7 +129,24 @@ function load_data($state, $value, $json) {
 }
 
 
-function create_json($install_path) {
+function set_global_values() {
+    # Set values used for calculations based upon current application state
+    try {
+        $state = get_state
+        $global:labour = load_data $state 'labour' $json
+        $global:shipping = load_data $state 'shipping' $json
+        $global:upper_limit = load_data $state 'upper_limit' $json
+        $global:lower_limit = load_data $state 'lower_limit' $json
+        $global:upper_multiplicand = load_data $state 'upper_multiplicand' $json
+        $global:lower_multiplicand = load_data $state 'lower_multiplicand' $json
+    } catch {
+        user_prompt 'Error' 'set globals'
+    }
+    verify_operands
+}
+
+
+function create_json($install_path, $name) {
     # Initiate a new JSON file if none is present in install directory
 
     $json = @{
@@ -144,7 +178,7 @@ function create_json($install_path) {
             lower_multiplicand = '0'
         }
     }
-    $json | convertto-json | out-file "$install_path\data.json"
+    $json | convertto-json | out-file "$install_path\$name.json"
 }
 
 
@@ -152,23 +186,6 @@ function hide_console() {
     # Hide PS console window during runtime. 0 = hide
     $console_window = [console.window]::getconsolewindow()
     [console.window]::showwindow($console_window, 0) 
-}
-
-
-function set_global_values() {
-    # Set values used for calculations based upon current application state
-    try {
-        $state = get_state
-        $global:labour = load_data $state 'labour' $json
-        $global:shipping = load_data $state 'shipping' $json
-        $global:upper_limit = load_data $state 'upper_limit' $json
-        $global:lower_limit = load_data $state 'lower_limit' $json
-        $global:upper_multiplicand = load_data $state 'upper_multiplicand' $json
-        $global:lower_multiplicand = load_data $state 'lower_multiplicand' $json
-    } catch {
-        user_prompt 'Error' 'set globals'
-    }
-    verify_operands
 }
 
 
@@ -236,11 +253,12 @@ function user_prompt($type, $trigger) {
         }
     } elseif ($type -eq 'Error') {
         switch  ($trigger) {
-        'clipboard' {$msg_body = 'Aw snap! Något gick fel under kopieringen. Detta vet vi:' + "`n`n$error"}
+        'clipboard' {$msg_body = 'Aw snap! Nåot gick fel under kopieringen. Detta vet vi:' + "`n`n$error"}
         'save' {$msg_body = 'Aw snap! Något gick snett när NumbR skulle spara data. Detta vet vi:' + "`n`n$error"}
         'set globals' {$msg_body = 'Aw snap! NumbR kunde inte läsa in data. Detta vet vi:' + "`n`n$error"}
         'save input error' {$msg_body = 'Här kan du endast ange siffror. Decimaltal skrivs med punkt.'}
         'json load' {$msg_body = 'Oh noes! Något hände. Det gick inte att läsa in filen. Detta vet vi:' + "`n`n$error"}
+        'startup' {$msg_body = 'Aw snap! NumR kunde inte starta. Detta vet vi:' + "`n`n$error"}
         }
     }
 

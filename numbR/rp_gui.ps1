@@ -7,7 +7,18 @@ $customer_menu = new-object system.windows.forms.combobox
 $customer_menu.top = 145
 $customer_menu.left = 833
 $customer_menu.width = 140
-$customer_menu.flatstyle = "flat"
+$customer_menu.flatstyle = 'flat'
+$customer_menu.dropdownstyle = 'dropdownlist'
+
+# Add New customer button
+$add_customer_button = new-object system.windows.forms.button
+$add_customer_button.top = 145
+$add_customer_button.left = 650
+$add_customer_button.width = 140
+$add_customer_button.height = 30
+$add_customer_button.text = 'Ny kund'
+$add_customer_button.flatstyle = 'flat'
+$add_customer_button.flatappearance.bordersize = 0
 
 
 <# Input value to calculate from if cost is greater than or equal to
@@ -152,7 +163,8 @@ $save_data_button.flatappearance.bordersize = 0
 # Render objects
 $form.controls.addrange(@(
     $customer_menu,
-    $rounding_panel, 
+    $add_customer_button, 
+    $rounding_panel,
     $darkmode_panel,
     $state_panel, 
     $upper_limit_box,

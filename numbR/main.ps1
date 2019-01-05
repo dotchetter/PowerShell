@@ -23,23 +23,12 @@ try {
     . ("$install_path\rp_gui.ps1")
     . ("$install_path\logic.ps1")
     . ("$install_path\event_listnrs.ps1")
+    . ("$install_path\nc_popup.ps1")
     . ("$install_path\event_handlrs.ps1")
-
-    # Form loop
 } catch {
-    write-warning "Huston, we have a problem. `n`n$error"
-    
-    $form.showdialog()
+    user_prompt 'Error' 'startup'
+    exit
 }
-
-<## Initialize variables
-$json = test-path "$install_path\data.json"
-
-# Create a JSON file if missing
-if (-not $json) {
-    create_json $install_path
-}
-#>
 
 
 $global_vars = @(
@@ -58,6 +47,18 @@ $dark_mode_shifters = @(
     $input_box, $lpane_list, $rpane_list, $gross_sum_box,
     $state_panel, $darkmode_panel
 )
+
+
+<# Load JSON file(s), populate customer list and 
+set number 1 in list as selected customer. 
+If not present, create template 'standard.json' #>
+try {
+    populate_customer_list $install_path
+    $name = get_current_customer
+    $json = get_json $install_path $name
+} catch {
+    create_json $install_path 'Standard'
+}
 
 
 # Load color mode, app state and rounding state from JSON
@@ -87,14 +88,13 @@ if ($json.rounding -eq 1) {
 
 
 # Function calls, see separate module 'logic.ps1'
-populate_customer_list $install_path
-$json = load_json $install_path
 hide_console
 reset_app
 set_global_values
 set_rpane_values
 set_color_mode $color_mode $dark_mode_shifters
 set_background $color_mode
+
 
 # Convert values from string to Int32
 foreach ($i in $global_vars) {

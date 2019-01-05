@@ -37,6 +37,15 @@ $bright_mode_checkbox.add_click({
     set_background $color_mode
 })
 
+# Customer list event listener. Triggers if selected customer changes.
+$customer_menu.add_SelectedIndexChanged({
+
+    $name = get_current_customer
+    $json = get_json $install_path $name
+    set_global_values
+    set_rpane_values
+
+})
 
 # Add functionality for all buttons on gui
 $add_cost.add_click({add_cost})
@@ -44,3 +53,4 @@ $reset.add_click({reset_app})
 $sum_button.add_click($sum_btn_click)
 $clipboard_button.add_click($clipboard_button_click)
 $save_data_button.add_click($save_data_button_click)
+$add_customer_button.add_click({new_customer})

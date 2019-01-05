@@ -44,7 +44,7 @@ function sum_btn() {
         $net_sum_box.text = $net_sum
         $sum_button.enabled = $false
         $add_cost.enabled = $false
-        $rpane_list.items.add("------------------------`n")
+        $rpane_list.items.add("______________________________`n")
         $rpane_list.items.add("Frakt: $shipping SEK")
         $rpane_list.items.add("Arbete: $labour SEK")
     }
@@ -67,11 +67,13 @@ function reset_app() {
 
 function save_data($json) {
     <# Read data from input boxes in right gui pane, renderd on chalkboard
-    and save values to JSON file. #>
+    and save values to JSON file. Reads current selected user from customer menu list 
+    so that values are saved to the correct file. #>
 
     $valid_input = $true
     $state = get_state
     $color_mode = get_color_mode
+    $customer = get_current_customer
     $all_rpane_fields = @(
         $labour_box, $ship_cost_box, 
         $upper_limit_box, $lower_limit_box, 
@@ -105,7 +107,7 @@ function save_data($json) {
             $json.$state.lower_limit = $lower_limit_box.text
             $json.$state.upper_multiplicand = $upper_multiplicand_box.text
             $json.$state.lower_multiplicand = $lower_multiplicand_box.text
-            $json | convertto-json | out-file "$install_path\data.json"
+            $json | convertto-json | out-file "$install_path\$customer"
             user_prompt 'Information' 'save'
         } 
     } catch {
@@ -136,5 +138,24 @@ function set_clipboard() {
         }
     } catch {
         user_prompt 'Error' 'clipboard'
+    }
+}
+
+
+function new_customer() {
+    <# If add customer button is clicked. 
+    Prompt user with separate popup window found in nc_popup.ps1 #>
+    $customer = $inputprompt.showdialog()   
+    if ($customer -eq [system.windows.forms.dialogresult]::OK) {
+        $customer = $new_customer_input.text
+
+    # Call create_json and create new JSON file 
+    create_json $install_path $customer
+    
+    <# Clear list of customers before calling populate_customer_list
+    to prevent duplicate entries in the customer menu list. #>
+    $customer_menu.items.clear()
+    populate_customer_list $install_path
+
     }
 }
