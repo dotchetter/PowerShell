@@ -70,7 +70,7 @@ function populate_customer_list($install_path) {
     call create_json for default values. #>
     $json = test-path "$install_path\*.json"
     if (-not $json) {
-        create_json $install_path
+        create_json $install_path 'Standard'
     }
 
     <# Get all JSON files in install directory and 
@@ -86,11 +86,10 @@ function populate_customer_list($install_path) {
 
 function get_json($install_path, $name) {
     # load correct JSON object depending on selected customer in menu.
-    $customer = get_current_customer
     try {
         $json = get-content "$install_path\$name" | convertfrom-json
     } catch {
-        user_prompt 'Error' 'Load'
+        user_prompt 'error' 'load json'
     }
     return $json
 }
@@ -259,6 +258,7 @@ function user_prompt($type, $trigger) {
         'save input error' {$msg_body = 'Här kan du endast ange siffror. Decimaltal skrivs med punkt.'}
         'json load' {$msg_body = 'Oh noes! Något hände. Det gick inte att läsa in filen. Detta vet vi:' + "`n`n$error"}
         'startup' {$msg_body = 'Aw snap! NumR kunde inte starta. Detta vet vi:' + "`n`n$error"}
+        'load json' {$msg_body = 'Oj! Något hände och vi kunde inte ladda filen. Detta vet vi:' + "`n`n$error"}
         }
     }
 
