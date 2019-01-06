@@ -47,6 +47,8 @@ function sum_btn() {
         $rpane_list.items.add("______________________________`n")
         $rpane_list.items.add("Frakt: $shipping SEK")
         $rpane_list.items.add("Arbete: $labour SEK")
+    } else {
+        user_prompt 'Information' 'no numbers'
     }
 }
 
@@ -119,13 +121,13 @@ function save_data($json) {
 
 
 function set_clipboard() {
-    <# Add contents from right pane listbox to clipboard, with added formatting and message phrases. 
-    Users can paste this content in web browser or elsewhere. #>
-    $phrase = "Hej, här kommer ditt kostnadsförslag. Vänligen återkom med ett beslut."
+    <# Add contents from right pane listbox to clipboard, with added formatting and
+    message phrases. Users can paste this content in web browser or elsewhere. #>
+    $phrase = "`nHej, här kommer ditt kostnadsförslag. Vänligen återkom med ett beslut.`n"
     $farewell = "MVH Advania Service & Support"
     try {
         if ($rpane_list.items) {
-            set-clipboard ($null + $phrase + "`n")
+            set-clipboard ($null + $phrase)
             foreach ($i in $rpane_list.items) {
                 foreach ($j in $i) {
                     if ($j -match '^[0-9]') {$j = "[KOMPONENTNAMN] $j"}
@@ -146,16 +148,20 @@ function new_customer() {
     <# If add customer button is clicked. 
     Prompt user with separate popup window found in nc_popup.ps1 #>
     $customer = $inputprompt.showdialog()   
-    if ($customer -eq [system.windows.forms.dialogresult]::OK) {
+    if ($customer -eq [system.windows.forms.dialogresult]::OK -and $new_customer_input.text) {
         $customer = $new_customer_input.text
 
-    # Call create_json and create new JSON file 
-    create_json $install_path $customer
-    
-    <# Clear list of customers before calling populate_customer_list
-    to prevent duplicate entries in the customer menu list. #>
-    $customer_menu.items.clear()
-    populate_customer_list $install_path
+        # Call create_json and create new JSON file 
+        try {
+            create_json $install_path $customer
+            user_prompt 'Information' 'customer added'
+        } catch {
+            user_prompt 'Error' 'customer added'
+        }   
 
+        <# Clear list of customers before calling populate_customer_list
+        to prevent duplicate entries in the customer menu list. #>
+        $customer_menu.items.clear()
+        populate_customer_list $install_path
     }
 }

@@ -30,20 +30,25 @@ $dark_mode_checkbox.add_click({
     set_background $color_mode
     $state_panel.forecolor = 'white' 
     $darkmode_panel.forecolor = 'white'
+
 })
+
 $bright_mode_checkbox.add_click({
+
     $color_mode = get_color_mode
     set_color_mode $color_mode $dark_mode_shifters
     set_background $color_mode
+
 })
 
 # Customer list event listener. Triggers if selected customer changes.
-$customer_menu.add_SelectedIndexChanged({
+$customer_menu.add_selectedindexchanged({
 
-    $name = get_current_customer
+    re_init
+<#    $name = get_current_customer
     $json = get_json $install_path $name
     set_global_values
-    set_rpane_values
+    set_rpane_values#>
 
 })
 

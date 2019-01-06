@@ -1,5 +1,5 @@
 # Developed for Advania Sverige AB by Simon Olofsson
-# Main module file for application "NumbR"
+# Module file for application "NumbR"
 # module purpose: main
 
 # Load framework and GUI dependencies

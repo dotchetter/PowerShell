@@ -2,29 +2,12 @@
 # Module file for application "NumbR"
 # Module purpose: Right pane GUI objects
 
-# Drop down menu for selecting customers
-$customer_menu = new-object system.windows.forms.combobox
-$customer_menu.top = 145
-$customer_menu.left = 833
-$customer_menu.width = 140
-$customer_menu.flatstyle = 'flat'
-$customer_menu.dropdownstyle = 'dropdownlist'
-
-# Add New customer button
-$add_customer_button = new-object system.windows.forms.button
-$add_customer_button.top = 145
-$add_customer_button.left = 650
-$add_customer_button.width = 140
-$add_customer_button.height = 30
-$add_customer_button.text = 'Ny kund'
-$add_customer_button.flatstyle = 'flat'
-$add_customer_button.flatappearance.bordersize = 0
 
 
 <# Input value to calculate from if cost is greater than or equal to
 assigned value by user. Saved to JSON object. #>
 $upper_limit_box = new-object system.windows.forms.textbox
-$upper_limit_box.top = 215
+$upper_limit_box.top = 175
 $upper_limit_box.left = 610
 $upper_limit_box.width = 40
 
@@ -32,43 +15,75 @@ $upper_limit_box.width = 40
 <# Input value to calculate from if cost is less than or equal to
  assigned value by user. Saved to JSON object.  #>
 $lower_limit_box = new-object system.windows.forms.textbox
-$lower_limit_box.top = 280
+$lower_limit_box.top = 240
 $lower_limit_box.left = 610
 $lower_limit_box.width = 40
 
 
 # Input value to set as multiplicand if cost is 'greater than'
 $upper_multiplicand_box = new-object system.windows.forms.textbox
-$upper_multiplicand_box.top = 215
+$upper_multiplicand_box.top = 175
 $upper_multiplicand_box.left = 790
 $upper_multiplicand_box.width = 40
 
 
 # Input value to set as multiplicand if cost is 'lessthan'
 $lower_multiplicand_box = new-object system.windows.forms.textbox
-$lower_multiplicand_box.top = 282
+$lower_multiplicand_box.top = 242
 $lower_multiplicand_box.left = 790
 $lower_multiplicand_box.width = 40
 
 
 # Input value to set shipping cost
 $ship_cost_box = new-object system.windows.forms.textbox
-$ship_cost_box.top = 318
+$ship_cost_box.top = 318 - 40
 $ship_cost_box.left = 790
 $ship_cost_box.width = 40
 
 
 # Input value to set labour cost for repair
 $labour_box = new-object system.windows.forms.textbox
-$labour_box.top = 354
+$labour_box.top = 314
 $labour_box.left = 790
 $labour_box.width = 40
+
+
+# Save data buttons
+$save_data_button = new-object system.windows.forms.button
+$save_data_button.top = 465
+$save_data_button.left = 600
+$save_data_button.width = 373
+$save_data_button.height = 30
+$save_data_button.text = 'Spara konfiguration'
+$save_data_button.flatstyle = 'flat'
+$save_data_button.flatappearance.bordersize = 0
+
+
+# Drop down menu for selecting customers
+$customer_menu = new-object system.windows.forms.combobox
+$customer_menu.top = 400
+$customer_menu.left = 600
+$customer_menu.width = 140
+$customer_menu.height = 30
+$customer_menu.flatstyle = 'flat'
+$customer_menu.dropdownstyle = 'dropdownlist'
+
+
+# Add New customer button
+$add_customer_button = new-object system.windows.forms.button
+$add_customer_button.top = 400
+$add_customer_button.left = 833
+$add_customer_button.width = 140
+$add_customer_button.height = 28
+$add_customer_button.text = 'Ny kund'
+$add_customer_button.flatstyle = 'flat'
+$add_customer_button.flatappearance.bordersize = 0
 
 
 # Group panel for application state radio buttons
 $state_panel = new-object system.windows.forms.panel
 $state_panel.location = '545, 630'
-$state_panel.size = '50, 150'
+$state_panel.size = '50, 75'
 $state_panel.backcolor = 'white'
 $state_panel.visible = $true
 
@@ -147,18 +162,6 @@ $rounding_off_checkbox.text = 'Av'
 $rounding_off_checkbox.checked = $false
 $rounding_off_checkbox.top = 30
 $rounding_off_checkbox.left = 0
-
-
-# Save data buttons
-$save_data_button = new-object system.windows.forms.button
-$save_data_button.top = 430
-$save_data_button.left = 618
-$save_data_button.width = 300
-$save_data_button.height = 30
-$save_data_button.text = 'Spara'
-$save_data_button.flatstyle = 'flat'
-$save_data_button.flatappearance.bordersize = 0
-
 
 # Render objects
 $form.controls.addrange(@(
