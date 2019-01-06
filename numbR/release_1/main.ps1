@@ -13,7 +13,7 @@ public static extern IntPtr GetConsoleWindow();
 [DllImport("user32.dll")]
 public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);'
 
-$install_path = "$home\git\powershell\NumbR"
+$install_path = "$env:appdata\NumbR"
 
 # Import modules
 
@@ -29,7 +29,6 @@ try {
     user_prompt 'Error' 'startup'
     exit
 }
-
 
 
 $global_vars = @(
