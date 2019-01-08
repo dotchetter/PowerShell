@@ -9,12 +9,13 @@ Button clicked: '$sum_button'. #>
 $sum_btn_click = {sum_btn $rounding}
 
 
-# Save to clipboard button. This saves all content in $lpane_list to clipboard memory.
+<# Save to clipboard button. This saves all content in 
+$lpane_list to clipboard memory. #>
 $clipboard_button_click = {set_clipboard}
 
 
-# Save data button. This saves all content on the chalkboard (rp_gui.ps1 box objects) -
-# to JSON file. 
+<# Save data button. This saves all content on the chalkboard 
+(rp_gui.ps1 box objects) to JSON file. #>
 $save_data_button_click = {save_data $json}
 
 

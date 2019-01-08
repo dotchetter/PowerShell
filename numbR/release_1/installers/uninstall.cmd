@@ -5,7 +5,6 @@
 	
 	set install_path="%appdata%\NumbR"
 
-
 :remove_files
 
 	rd /s /q "%appdata%\numbR"

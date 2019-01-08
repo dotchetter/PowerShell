@@ -13,11 +13,11 @@
 
 :copy_files
 
-	xcopy /s /e /h /k * %install_path%
-	move bg_b.png %meta_path%
-	move bg_w.png %meta_path%
-	move numbr.ico %meta_path%
-	move %install_path%\NumbR.exe "%userprofile%\desktop"
+	xcopy /s /e /h /k /y * %install_path%
+	move /y bg_b.png %meta_path%
+	move /y bg_w.png %meta_path%
+	move /y numbr.ico %meta_path%
+	move /y %install_path%\NumbR.exe "%userprofile%\desktop"
 
 :policy
 
