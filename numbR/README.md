@@ -69,3 +69,14 @@ I'll make sure to investigate it further.
 ## Technical jargon
 
 NumbR is build using the .NET framework in PowerShell. Various C# methods are used to display the GUI and all items in it. By the use of PowerShell, NumbR enables quick compatibility and ease of implementation and modification with the easy and friendly syntax of PowerShell. Details on the modules that make up NumbR and how the code is structured can be found in the technical manual for NumbR, as well as source code comments.
+
+
+## ToDo
+
+* Feature / Bug fix: prohibit the possibility of entering more than one decimal notation (.) in a single price. Illogical and causes conversion error.
+
+* Feature: Strip the clipboard version of component prices of the decimals. E.g, if a component costs 172.3 SEK, display only 172 in the clipboard quotation.
+
+* Feature: Create functionality for exporting and importing JSON files (customer configurations) through the UI
+
+* Tool: Build NumbR Updater
