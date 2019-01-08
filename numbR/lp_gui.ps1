@@ -89,7 +89,7 @@ $net_sum_box.text = '0.00 Kr'
 
 # Copy right side listbox to clipboard button
 $clipboard_button = new-object system.windows.forms.button
-$clipboard_button.top = 625
+$clipboard_button.top = 630
 $clipboard_button.left = 85
 $clipboard_button.width = 300
 $clipboard_button.height = 30
@@ -98,9 +98,19 @@ $clipboard_button.flatstyle = "flat"
 $clipboard_button.flatappearance.bordersize = 0
 
 
+# Clipboard done prompt
+$clipboard_done_prompt = new-object system.windows.forms.textbox
+$clipboard_done_prompt.top = 665
+$clipboard_done_prompt.left = 105
+$clipboard_done_prompt.width = 255
+$clipboard_done_prompt.text = 'Klistra in för att se ditt kostnadsförslag'
+$clipboard_done_prompt.borderstyle = 'none'
+$clipboard_done_prompt.hide()
+
+
 # Reset application button
 $reset = new-object system.windows.forms.button
-$reset.top = 680
+$reset.top = 690
 $reset.left = 85
 $reset.width = 300
 $reset.height = 30
@@ -111,7 +121,6 @@ $reset.flatappearance.bordersize = 0
 
 # -- render objects
 $form.controls.addrange(@(
-
     $input_box,
     $add_cost,
     $lpane_list,
@@ -120,7 +129,7 @@ $form.controls.addrange(@(
     $gross_sum_box,
     $sum_button,
     $net_sum_box,
-    $clipboard_button
-  
+    $clipboard_button,
+    $clipboard_done_prompt
     )
 )
