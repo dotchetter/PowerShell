@@ -110,8 +110,12 @@ function save_data($json) {
             $json.$state.upper_multiplicand = $upper_multiplicand_box.text
             $json.$state.lower_multiplicand = $lower_multiplicand_box.text
             $json | convertto-json | out-file "$install_path\$customer"
-            user_prompt 'Information' 'save'
-        } 
+            
+            # Prompt user that data was saved
+            $save_data_prompt.show()
+            sleep 2
+            $save_data_prompt.hide()
+        }
     } catch {
         user_prompt 'Error' 'save'
     } finally {
@@ -136,7 +140,9 @@ function set_clipboard() {
             } 
             set-clipboard -append ("`nTotalt: " + $net_sum_box.text)
             set-clipboard -append "`n$farewell"
-            user_prompt 'Information' 'clipboard'
+            $clipboard_done_prompt.show()
+            sleep 2
+            $clipboard_done_prompt.hide()
         }
     } catch {
         user_prompt 'Error' 'clipboard'

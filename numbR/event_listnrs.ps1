@@ -42,16 +42,10 @@ $bright_mode_checkbox.add_click({
 
 })
 
+
 # Customer list event listener. Triggers if selected customer changes.
-$customer_menu.add_selectedindexchanged({
+$customer_menu.add_selectedindexchanged({re_init})
 
-    re_init
-<#    $name = get_current_customer
-    $json = get_json $install_path $name
-    set_global_values
-    set_rpane_values#>
-
-})
 
 # Add functionality for all buttons on gui
 $add_cost.add_click({add_cost})

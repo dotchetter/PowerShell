@@ -46,7 +46,8 @@ $dark_mode_shifters = @(
     $darkmode_panel, $state_panel, $net_sum_box, 
     $rounding_panel, $darkmode_panel, $state_panel,
     $input_box, $lpane_list, $rpane_list, $gross_sum_box,
-    $state_panel, $darkmode_panel
+    $state_panel, $darkmode_panel, $save_data_prompt,
+    $clipboard_done_prompt
 )
 
 
