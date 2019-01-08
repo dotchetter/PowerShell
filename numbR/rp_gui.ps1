@@ -59,6 +59,16 @@ $save_data_button.flatstyle = 'flat'
 $save_data_button.flatappearance.bordersize = 0
 
 
+# 'Data has been saved' text label prompt
+$save_data_prompt = new-object system.windows.forms.textbox
+$save_data_prompt.top = 500
+$save_data_prompt.left = 602
+$save_data_prompt.width = 900
+$save_data_prompt.text = 'Inställningar och griffeltavlan sparades för aktuell kund'
+$save_data_prompt.hide()
+$save_data_prompt.borderstyle = 'none'
+
+
 # Drop down menu for selecting customers
 $customer_menu = new-object system.windows.forms.combobox
 $customer_menu.top = 400
@@ -176,6 +186,7 @@ $form.controls.addrange(@(
     $lower_multiplicand_box, 
     $ship_cost_box,
     $labour_box,
+    $save_data_prompt,
     $save_data_button
     )
 )
