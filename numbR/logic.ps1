@@ -294,23 +294,31 @@ function user_prompt($type, $trigger) {
     
     if ($type -eq 'Information') {
         switch ($trigger) {
-            'clipboard' {$msg_body = 'Klart! kostnadsförslaget ligger i ditt urklipp. Klistra in för att få fram ditt kostnadsförslag.'}
-            'save' {$msg_body = 'Griffeltavlan och inställningar har sparats för aktuell kund och appläge.'}
-            'add cost' {$msg_body = 'Det där ser inte ut som ett tal. Försök igen. Separera flera priser med semikolon.'}
+            'add cost' {$msg_body = 
+                'Det där ser inte ut som ett tal. Försök igen. Separera flera priser med semikolon.'}
             'customer added' {$msg_body = 
-            'Kund sparad! Alla värden på griffeltavlan sparas unikt för denna kund. Griffeltavlan har populerats med standardvärden.'}
-            'no numbers' {$msg_body = 'Hmm.. det ser inte ut som att du matat in något?'}
+                'Kund sparad! Allt du sparar lagras just för denna kund. Griffeltavlan har populerats med standardvärden.'}
+            'no numbers' {$msg_body = 
+                'Hmm.. det ser inte ut som att du matat in något?'}
         }
     } elseif ($type -eq 'Error') {
         switch  ($trigger) {
-            'clipboard' {$msg_body = 'Cheesus! Något gick fel under kopieringen till din clipboard. Detta vet vi:' + "`n`n$error"}
-            'save' {$msg_body = 'Aw snap! Något gick snett när NumbR skulle spara data. Detta vet vi:' + "`n`n$error"}
-            'set globals' {$msg_body = 'Aw snap! NumbR kunde inte läsa in data. Detta vet vi:' + "`n`n$error"}
-            'save input error' {$msg_body = 'Hej där! Här på griffeltavlan kan du endast ange siffror. Decimaltal skrivs med " . "'}
-            'json load' {$msg_body = 'Computer says no! Något hände och det gick inte att läsa in filen. Detta vet vi:' + "`n`n$error"}
-            'startup' {$msg_body = 'Aw snap! NumR kunde inte starta. Om felen fortsätter, prova ominstallera NumbR. Detta vet vi:' + "`n`n$error"}
-            'customer added' {$msg_body = 'Järnspikar! Filen kunde inte sparas. Lite mer detaljerat uttryckt;' + "`n`n$error"}
-            'create json' {$msg_body = 'Bomber och granater! Det gick inte att skapa en profil. Kontrollera att NumbR har åtkomst till mappen.' + "`n`n$error"}
+            'clipboard' {$msg_body = 
+                'Cheesus! Något gick fel under kopieringen till din clipboard. Detta vet vi:' + "`n`n$error"}
+            'save' {$msg_body = 
+                'Aw snap! Något gick snett när NumbR skulle spara data. Detta vet vi:' + "`n`n$error"}
+            'set globals' {$msg_body = 
+                'Aw snap! NumbR kunde inte läsa in data. Detta vet vi:' + "`n`n$error"}
+            'save input error' {$msg_body = 
+                'Hej där! Här på griffeltavlan kan du endast ange siffror. Decimaltal skrivs med " . "'}
+            'json load' {$msg_body = 
+                'Computer says no! Något hände och det gick inte att läsa in filen. Detta vet vi:' + "`n`n$error"}
+            'startup' {$msg_body = 
+                'Aw snap! NumR kunde inte starta. Om felen fortsätter, prova ominstallera NumbR. Detta vet vi:' + "`n`n$error"}
+            'customer added' {$msg_body = 
+                'Järnspikar! Filen kunde inte sparas. Lite mer detaljerat uttryckt;' + "`n`n$error"}
+            'create json' {$msg_body = 
+                'Bomber och granater! Det gick inte att skapa en profil. Kontrollera att NumbR har åtkomst till' + $env:appdata + ".`n`n$error"}
         }
     }
 
