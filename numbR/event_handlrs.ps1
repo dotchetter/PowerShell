@@ -125,15 +125,22 @@ function set_clipboard() {
     message phrases. Users can paste this content in web browser or elsewhere. #>
     $phrase = "`nHej, här kommer ditt kostnadsförslag. Vänligen återkom med ett beslut.`n"
     $farewell = "MVH Advania Service & Support"
+    
+    # Add every item in the right pane list containing every component to the clipboard
     try {
         if ($rpane_list.items) {
             set-clipboard ($null + $phrase)
             foreach ($i in $rpane_list.items) {
                 foreach ($j in $i) {
+                    # If the cost is a decimal, delete the decimals and decimal sign from quotation
+                    if ($j.contains('.')) {
+                        $j = ($j.split('.')[0] + ' SEK')
+                    }
+                    # Add only this string in front of the given string if it is a number
                     if ($j -match '^[0-9]') {$j = "[KOMPONENTNAMN] $j"}
                     set-clipboard -append $j
                 }
-            } 
+            }
             set-clipboard -append ("`nTotalt: " + $net_sum_box.text)
             set-clipboard -append "`n$farewell"
             user_prompt 'Information' 'clipboard'
