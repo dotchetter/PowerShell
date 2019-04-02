@@ -32,13 +32,13 @@ $users = New-Object 'collections.generic.list[string]'
 # Instanciate a hashmap to keep the final output data
 $output = @{}
 
-# Append a string with the info for each device in the list
+# Concatenate a string with the info for each device in the list
 foreach ($device in $deviceList) {
     $r = gam info cros $device
     $infostr += $r
 }
 
-# Split the appended string by the indicator that a new device starts
+# Split the Concatenated string by the indicator that a new device starts
 $infostr = $infostr -Split 'Cros Device'
 
 # Iterate through the string and append the mutable list
