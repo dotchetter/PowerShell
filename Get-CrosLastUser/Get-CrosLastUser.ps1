@@ -23,11 +23,11 @@ $deviceList = gam print cros
 $deviceList = $deviceList[1..$deviceList.Length]
 # Instanciate a mutable list object to add each device to
 $deviceInfoList = New-Object 'collections.generic.list[string]'
-# Instanciate an arraylist to store the parsed data in
+# Instanciate a mutable list object to store the parsed data in
 $data = New-Object 'collections.generic.list[string]'
-# Instanciate an arraylist to store user adresses found
+# Instanciate a mutable list object to store serialnumbers found
 $sn = New-Object 'collections.generic.list[string]'
-# Instanciate an arraylist to store serialnumbers found
+# Instanciate a mutable list object to store user adresses found
 $users = New-Object 'collections.generic.list[string]'
 # Instanciate a hashmap to keep the final output data
 $output = @{}
