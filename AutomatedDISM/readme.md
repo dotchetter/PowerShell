@@ -1,8 +1,7 @@
 
 ## Quick start
 
-* Use Win32 Disk Imager to create a USB drive from the .img file in this repository to use
-the environment with Jönköping files: HPProBook430G5-JKPG.wim, HPProBookX360-JKPG.wim.
+* Use Win32 Disk Imager to create a USB drive from the .img file in the full version of this directory (confidential)
 
 ## Modify the project for use with other images
 
