@@ -1,4 +1,4 @@
-# Softare purpose: Bootable image deployment environment for J?nk?ping Kommun
+# Softare purpose: Bootable image deployment environment
 
 <# 
 $author = 'Simon Olofsson'
