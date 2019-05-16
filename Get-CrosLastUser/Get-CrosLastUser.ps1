@@ -15,6 +15,11 @@ This script has the following prerequisites:
 2. Write access to $home directory 
 #>
 
+param(
+    [mandatory]$inFile,
+    [mandatory]$outPath
+)
+
 # Current date in string format
 $date = Get-Date -Format 'yyyy-MM-dd'
 
@@ -22,7 +27,11 @@ $date = Get-Date -Format 'yyyy-MM-dd'
 $count = 0
 
 # Parse file containing device ID's
-$devices = get-content ".\devices_to_query.dat"
+try {
+    $devices = get-content $inFile
+} catch {
+    Throw "FileNotFound:: inFile"
+}
 
 # Length variable for progressbar
 $len = $devices.count
@@ -61,4 +70,4 @@ if ($exists -ne $true) {
 }
 
 # Output a JSON file
-$output | Out-File "$home\desktop\Get-CrosLastUser\$date.json"
+$output | Out-File "$outPath\Get-CrosLastUser_$date.json"
