@@ -70,7 +70,7 @@ param(
     [Parameter(Position=0,Mandatory = $true)] [string]$PathToGAM, 
     [Parameter(Position=1,Mandatory = $false)] [switch]$Override,
     [Parameter(ParameterSetName = 'Extra',Mandatory = $false)][switch]$ToFile,      
-    [Parameter(ParameterSetName = 'Extra',Mandatory = $false)][string]$Path
+    [Parameter(ParameterSetName = 'Extra',Mandatory = $true)][string]$Path
 )
 
 
@@ -101,11 +101,12 @@ function Get-RecentUser ($gampath, $deviceID, $override = $false) {
     [int32]$cnt = 0
     [int32]$len = $deviceID.Count
     [Hashtable]$export = @{}
-
+    [Array]$exportArr = @()
     # Iterate through the list of device ID's and get data
     foreach ($id in $deviceID) {
 
         $cnt ++
+        $_DeviceObjRepr = @{}
 
         # Get output from GAM
         $query = & $gampath info cros $id recentusers serialnumber
@@ -135,16 +136,22 @@ function Get-RecentUser ($gampath, $deviceID, $override = $false) {
             }
         }
     
-        # Add the serialnumber with recent user to the hashtable
-        if ($recentUser -notin $export.Keys) {
-            $export.Add($sn, $recentUser)
+        # Add the serialnumber with recent user to the iterating hashtable
+        if ($recentUser -notin $_DeviceObjRepr.Keys) {
+            $_DeviceObjRepr.Add($sn, $recentUser)
         }
+
+        # Add the object representation hashtable to the array
+        $exportArr += @($_DeviceObjRepr)
 
         # Write progress to screen
         $_percent = (($cnt / $deviceID.Count) * 100)
         $_activity = "Pairing SN with recent user"
         Write-Progress -Activity $_activity -Status "$cnt of $len" -PercentComplete $_percent
     }
+        # Add the array to the value for this device ID in the main hashtable
+        $export.Add('Export', $exportArr)
+
     return $export
 }
 
@@ -155,7 +162,7 @@ if (Test-Path $PathToGAM) {
         $_idList = Get-DeviceID $PathToGAM
         $_recentUsers = Get-RecentUser $PathToGAM $_idList $Override
     } catch {
-        Write-Host "`nAn error occured! " + $error -f Red
+        Write-Host "`nAn error occured! $error" -f Red
     }
 
     if ($_recentUsers -and $ToFile) {
