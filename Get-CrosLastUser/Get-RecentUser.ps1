@@ -107,6 +107,7 @@ function Get-RecentUser ($gampath, $deviceID, $override = $false) {
 
         $cnt ++
         $_DeviceObjRepr = @{}
+        $_preTime = [DateTimeOffset]::Now.ToUnixTimeSeconds()
 
         # Get output from GAM
         $query = & $gampath info cros $id recentusers serialnumber
@@ -144,13 +145,17 @@ function Get-RecentUser ($gampath, $deviceID, $override = $false) {
         # Add the object representation hashtable to the array
         $exportArr += @($_DeviceObjRepr)
 
-        # Write progress to screen
-        $_percent = (($cnt / $deviceID.Count) * 100)
-        $_activity = "Pairing SN with recent user"
-        Write-Progress -Activity $_activity -Status "$cnt of $len" -PercentComplete $_percent
+        # Write progress to screen with estimated time remaining
+        [double]$_percent = (($cnt / $deviceID.Count) * 100)
+        [string]$_activity = "Pairing SN with recent user"
+        [double]$_postTime = ([DateTimeOffset]::Now.ToUnixTimeSeconds() - $_preTime)
+        [double]$_etr = ($_postTime * ($deviceID.Count - $cnt))
+        [string]$_status = "$cnt of $len. Estimated $_etr seconds remaining"
+
+        Write-Progress -Activity $_activity -Status $_status -PercentComplete $_percent
     }
         # Add the array to the value for this device ID in the main hashtable
-        $export.Add('Export', $exportArr)
+        $export.Add('RecentUsers', $exportArr)
 
     return $export
 }
