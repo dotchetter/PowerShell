@@ -1,27 +1,15 @@
 <# 
 $author = Simon Olofsson
-$date = 2019-04-03
-
-This script will:
-
-1. Query GAM to fetch all devices in the G Suite domain
-2. Ask GAM to fetch device info for each device fetched
-3. Parse the list of info, and only keep data of interest
-4. Output a JSON file with the device serialnumber and last user
-
-This script has the following prerequisites:
-
-1. GAM is installed and authenticated on the local system
-2. Write access to $home directory 
-#>
-
+$date = 2019-05-24 #>
 <#
+
 .Synopsis
  Return most recent user with a Chrome OS device in Google G suite by using GAM
  and parsing output piped to stdout.
+ This script requires GAM to be installed. Se link below for details on this software. 
 
 .Description
- This module returns data parsed from output by GAM (https://github.com/jay0lee/GAM).
+ This script returns data parsed from output by GAM (https://github.com/jay0lee/GAM).
  The objective is to create metadata with a correlation between a CrOS (Chrome OS) 
  device and its latest logged on user. This data can be used later to bind a user
  entity with devices based on usage. The bias being that one presumes that the latest
@@ -29,7 +17,12 @@ This script has the following prerequisites:
  using this data to bind users in a production environment such as a business system.
  Sometimes these machines may have a non-managed user as its most recent user. This 
  causes the device to register a "UnmanagedUser" in the output from this script. 
- This can be mitigated by using the -Override switch. 
+ This can be mitigated by using the -Override switch. This will however still result
+ in 'UnmanagedUser' to be set as value for a serialnumber if nothing else was found.
+
+ When the script runs, at first you will get output from GAM as it returns deviceID
+ strings for all CrOS devices in the domain. This will take a few minutes depending
+ on the size of the domian.
 
 .Parameter PathToGam
  The full path to the gam binary you want to use.
@@ -39,6 +32,8 @@ This script has the following prerequisites:
  Google users as the recent user. Iterate further down the list of users on a device, 
  if the recent most user is  unmanaged. Keep on iterating until a managed user appears, 
  and select the recent most managed user that can be found for given device. 
+ Take note that this will however still result in 'UnmanagedUser' to be set as value
+ for a serialnumber if nothing else was found.
 
 .Parameter ToFile
  Get the output in JSON format
@@ -61,14 +56,15 @@ This script has the following prerequisites:
 .Example
  # Run the script and mitigate 'UnmanagedUser' data with -Override
  Get-Recentuser -PathToGam C:\Gam\gam.exe -override
- 
- 
+
+.Link 
+https://github.com/jay0lee/GAM  
 #>
 
 [CmdletBinding(DefaultParametersetName='None')] 
 param( 
-    [Parameter(Position=0,Mandatory = $true)] [string]$PathToGAM, 
-    [Parameter(Position=1,Mandatory = $false)] [switch]$Override,
+    [Parameter(Position = 0,Mandatory = $true)] [string]$PathToGAM, 
+    [Parameter(Position = 1,Mandatory = $false)] [switch]$Override,
     [Parameter(ParameterSetName = 'Extra',Mandatory = $false)][switch]$ToFile,      
     [Parameter(ParameterSetName = 'Extra',Mandatory = $true)][string]$Path
 )
@@ -96,12 +92,29 @@ function Get-RecentUser ($gampath, $deviceID, $override = $false) {
     through the list of users if the first occurence happens to be 
     'Unmanaged User'. The value for each key, represented by a device 
     SN, contains an array with 2 indices; RecentUser email string and 
-    Device ID string for the serial number. #>
+    Device ID string for the serial number. A progress bar with the 
+    remaining deivces, and calculated estimated time remaining. 
+    This is done with UNIX time measurement for each iteration. 
+    1/20 of the batch is used to calculate a valid enough average. After 
+    the iterations surpass 1/20, an average is calculated based on every
+    individual iteration thus far and displayed in a readable time format
+    in Write-Progress. #>
 
-    [int32]$cnt = 0
-    [int32]$len = $deviceID.Count
-    [Hashtable]$export = @{}
+    # Iteration counter
+    [Int32]$cnt = 0
+    # Length of array with devices
+    [Int32]$len = $deviceID.Count
+    # Main hashtable with all child objects
+    [hashtable]$export = @{}
+    # Array containing each iteration hashtable
     [Array]$exportArr = @()
+    # Array containing integers representing seconds for every past iteration
+    [Array]$avgArr = @()
+    # Limit integer to measure when time estimation calculation is sufficiently accurate
+    [Int32]$limit = ($len / 20)
+
+    [String]$_status = "Gathering data on first 5 iterations, please wait..."
+    
     # Iterate through the list of device ID's and get data
     foreach ($id in $deviceID) {
 
@@ -145,18 +158,39 @@ function Get-RecentUser ($gampath, $deviceID, $override = $false) {
         # Add the object representation hashtable to the array
         $exportArr += @($_DeviceObjRepr)
 
-        # Write progress to screen with estimated time remaining
-        [double]$_percent = (($cnt / $deviceID.Count) * 100)
-        [string]$_activity = "Pairing SN with recent user"
-        [double]$_postTime = ([DateTimeOffset]::Now.ToUnixTimeSeconds() - $_preTime)
-        [double]$_etr = ($_postTime * ($deviceID.Count - $cnt))
-        [string]$_status = "$cnt of $len. Estimated $_etr seconds remaining"
+        # Calculate progress values and an average time for iterations to come
+        [Double]$_percent = (($cnt / $len) * 100)
+        [String]$_activity = "Pairing SN with recent user"
+        [Double]$_postTime = ([DateTimeOffset]::Now.ToUnixTimeSeconds() - $_preTime)
+        $avgArr += $_postTime
+        $_avgValue = $avgArr | Measure-Object -Average | Select-Object -ExpandProperty Average
+        [Double]$_etr = ($_avgValue * ($len - $cnt))
+        
+        # Update the remaining time
+        $_timeObject = [Timespan]::FromSeconds($_etr)
+        $_days = $_timeObject.Days
+        $_hours = $_timeObject.Hours
+        $_minutes = $_timeObject.Minutes
+        $_seconds = $_timeObject.Seconds
+
+        if ($cnt % 5 -eq 0) {
+            if ($cnt -lt $limit) {
+                [String]$_status = "$cnt of $len Complete. Calculating remaining time forecast..."
+            } else {
+                # Only display seconds if remaining time is less than 1 hour
+                if ($_hours -gt 0) {
+                    [String]$_status = "$cnt of $len Complete. Estimated time remaining: $_days days, $_hours hrs, $_minutes min"
+                } else {
+                    [String]$_status = "$cnt of $len Complete. Estimated time remaining: $_days days, $_hours hrs, $_minutes min, $_seconds sec"
+                }
+            }
+        }
 
         Write-Progress -Activity $_activity -Status $_status -PercentComplete $_percent
     }
-        # Add the array to the value for this device ID in the main hashtable
-        $export.Add('RecentUsers', $exportArr)
-
+    
+    # Add the array to the value for this device ID in the main hashtable
+    $export.Add('RecentUsers', $exportArr)
     return $export
 }
 
