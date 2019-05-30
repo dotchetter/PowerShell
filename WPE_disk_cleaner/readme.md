@@ -38,8 +38,3 @@ unless rewritten to English.
 * Start the machine to wipe from the USB drive
  
 
-## TODO:
-
-* Evalate internal drive number successfully and pass to disk cleaning function
-* Refactoring
-* English version
