@@ -1,11 +1,6 @@
-# Softare purpose: Bootable image deployment environment
-
-<# 
+<#
+Softare purpose: Bootable image deployment environment
 $author = 'Simon Olofsson'
-2019-02-25 Advania Sverige AB
-This source code is not for public use. Any attempts to modify,
-reverse-engineer or otherwise tamper with this software is strictly
-prohibited. 
 #>
 
 
