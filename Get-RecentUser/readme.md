@@ -12,30 +12,30 @@ any other database that keeps these kinds of records.
 # Get started
 1. Download and configure GAM. See link above.
 2. Download Get-RecentUser script from this repository
-3. Open PowerShell, and execute the script. Mantatory switches will demand information from you.
+3. Open PowerShell, and execute the script. Mandatory switches will demand information from you.
 
 The script will generate a JSON file with the following structure:
 
-` {
+    {
 
-    "Export": 
+        "Export": 
        
-          [
-              {
-                  "SERIALNUMBER": "MANAGED_EMAIL_ADDRESS"
-              }
-          ]
-  }`
+              [
+                  {
+                      "SERIALNUMBER": "MANAGED_EMAIL_ADDRESS"
+                  }
+              ]
+    }
             
-
-This structure makes it easy for you to parse the data in the JSON array, and import to your system of choice.
+This structure makes it easy for you to parse the objects in the JSON array, and import to your system of choice.
 Also, feel free to edit the logic in function Get-RecentUser if you need your file to be structured differently.
 
 
 # Need help?
 Run `Get-Help | .\Get-RecentUser.ps1`
+
 For examples, run `Get-Help | .\Get-RecentUser.ps1 -examples`
+
 For full help page, run `Get-Help | .\Get-RecentUser.ps1 -full`
 
 Any further questions can be emailed to me directly at dotchetter@protonmail.ch 
-
