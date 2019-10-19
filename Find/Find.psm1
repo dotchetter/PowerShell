@@ -1,64 +1,72 @@
 <# 
-$author = Simon Olofsson
-$date = 2019-10-18 
 
-.Description
+.SYNOPSIS
+ Find files or directories with fewer parameters. Get Boolean hinting 
+ if one or more were found. Get output in JSON for easy serializing of
+ the output data. Search by file types (extensions).
+
+.DESCRIPTION
  Simplified file search from the commandline. Returns full path for every found
  file object in search. 
  
-.Parameter startDir
+.PARAMETER startDir
  The directory in which to traverse from. (Where to start the search)
  
-.Parameter Name
+.PARAMETER Name
  The name of the file you are looking for.
  
-.Parameter Extension
+.PARAMETER Extension
  Get the output in a JSON array format
  
-.Parameter Path
+.PARAMETER Path
  If ToFile is specified, this is mandatory. Provide a path where you want the output file.
  
-.Parameter toJson
+.PARAMETER toJson
  Returns a JSON array with all matched items for the search.
  
-.Parameter toBool
+.PARAMETER toBool
  Returns no other output than a Boolean to indicate whether one or more items were found.
  
-.Example
+.EXAMPLE
  # Find all Python files for all subfolders below C:\Users
  find -Extension 'py' -startDir 'C:\Users'
  
-.Example
+.EXAMPLE
  # Find all files and folders with 'this' as its name under C:\Users
  find -Name 'this' -startDir 'C:\Users'
  
-.Example
+.EXAMPLE
  # Return whether any match was found on this search at all or not
  find -Name 'My Precious file' -startDir $home -toBool
  
-.Example
+.EXAMPLE
  # Get all .dat files in CURRENT directory in a JSON array
  find -Extension 'dat' -toJson 
  
-.Link 
+.LINK 
  https://github.com/jay0lee/GAM  
 #>
 
 Function Find
 {
     param(
+        [CmdletBinding()] 
         [Parameter(Position = 0)]
         [String]$Name,
         
+        [CmdletBinding()] 
         [Parameter(Position = 1)]
         [String]$startDir,
         
+        [CmdletBinding()] 
         [Parameter(Mandatory = $false)]
         [String]$Extension,
         
+        [CmdletBinding()] 
         [Parameter(Mandatory = $false)]
         [Switch]$toJson,
 
+        [CmdletBinding()] 
         [Parameter(Mandatory = $false)]
         [Switch]$toBool
     )
