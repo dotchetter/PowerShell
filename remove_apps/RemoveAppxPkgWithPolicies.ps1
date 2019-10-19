@@ -41,6 +41,14 @@ initiated.
     }
 }
 
+function stop($process) {
+# find out if process process is running and end it
+    $status = get-process -name *$process*
+    if ($status) {
+       $status.kill()
+    }
+}
+
 function remove_apps($all, $removals) {
 <# uninstalls apps in array and removes provisioned packages 
 to prevent automatic re-install #>
@@ -55,5 +63,25 @@ to prevent automatic re-install #>
     }
 }
 
+function next_logon() {
+<# if the script is run during OOBE by MDM downloading the script prior to
+the creation of a user profile, this function sets registry values that
+will execute the script upon next logon for the user.#>
+
+    $item = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+    $command_one = 'powershell.exe -command "set-executionpolicy bypass -force'
+    $command_two = 'start-process powershell.exe -windowstyle hidden {C:\temp\awscript\removeappxpkg.ps1}"'
+    $value = ($command_one + '; ' + $command_two)
+    $name = 'Run Config Script'
+    new-item -path "$item" -value "$value" -force
+    $error.clear()
+}
+
+function error_handler($error) {
+
+    $err_count = $error.count
+    $err_string = "$err_count error(s) occured. See verbose log below:"
+    $err_string,"`n",$error | out-file -filepath 'C:\temp\awscript\ConfigScript_error.log'
+}
 
 main
