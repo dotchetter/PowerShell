@@ -47,7 +47,7 @@
  https://github.com/jay0lee/GAM  
 #>
 
-Function Find
+Function Findf
 {
     param(
         [CmdletBinding()] 
@@ -129,4 +129,3 @@ Function Find
         }
     }
 }
-Export-ModuleMember -Function * -Alias * -Variable *
