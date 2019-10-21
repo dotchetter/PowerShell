@@ -1,4 +1,4 @@
-foreach ($file in Get-ChildItem *.py)
+foreach ($file in Get-ChildItem *)
 {
     $content = Get-Content $file
     for ($row = 0; $row -lt $content.Count; $row++)
