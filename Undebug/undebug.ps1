@@ -1,12 +1,16 @@
 foreach ($file in Get-ChildItem *)
 {
-    $content = Get-Content $file
-    for ($row = 0; $row -lt $content.Count; $row++)
+    if ($file.GetType().Name -eq 'FileInfo')
     {
-        if ($content[$row].Trim() -match 'DEBUG')
+        $content = Get-Content $file
+        
+        for ($row = 0; $row -lt $content.Count; $row++)
         {
-            $debugRow = ($row + 1)
-            Write-Warning "DEBUG statement found in $file.Name, row $debugRow"
+            if ($content[$row].Trim() -match 'DEBUG')
+            {
+                $debugRow = ($row + 1)
+                Write-Warning "DEBUG statement found in $file.Name, row $debugRow"
+            }
         }
     }
 }
